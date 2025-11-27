@@ -84,7 +84,15 @@
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
         }
-        .logo { height: 3rem; width: auto; pointer-events: auto; }
+        /* UPDATED: Made logo bigger (4.5rem) and interactive */
+        .logo { 
+            height: 4.5rem; 
+            width: auto; 
+            pointer-events: auto; 
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .logo:hover { transform: scale(1.05); }
         
         .header-right {
             display: flex;
@@ -157,10 +165,10 @@
             display: flex; flex-direction: column; justify-content: center; height: 100%;
         }
         
-        /* Layout Fix for Standings Slide - UPDATED: Reduced padding-top to move list higher */
+        /* Layout Fix for Standings Slide */
         #slide-2 .slide-content {
             justify-content: flex-start;
-            padding-top: 8vh; /* Was 12vh */
+            padding-top: 8vh; 
         }
         #slide-2 .slide-title {
             font-size: clamp(3rem, 6vw, 6rem);
@@ -192,13 +200,21 @@
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: transparent; opacity: 0.8;
+            /* UPDATED: Make glitch layers transparent with stroke (border) only */
+            color: transparent;
         }
         .glitch-effect::before {
-            color: var(--accent-cyan); z-index: -1; clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            /* Cyan Border Glitch */
+            -webkit-text-stroke: 2px var(--accent-cyan);
+            z-index: -1; 
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
             transform: translate(-2px, -2px); opacity: 0;
         }
         .glitch-effect::after {
-            color: var(--accent-red); z-index: -2; clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+            /* Red Border Glitch */
+            -webkit-text-stroke: 2px var(--accent-red);
+            z-index: -2; 
+            clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
             transform: translate(2px, 2px); opacity: 0;
         }
         .slide.active .glitch-effect::before { animation: glitch-anim-1 2.5s infinite linear alternate-reverse; opacity: 1; }
@@ -238,8 +254,11 @@
         }
         .countdown-item:hover { transform: translateY(-5px); border-color: var(--accent-red); background: rgba(255, 31, 75, 0.1); }
         .countdown-val {
-            display: block; font-family: 'Rajdhani', sans-serif; font-size: clamp(2.5rem, 4vw, 4rem);
+            display: block; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: clamp(2.5rem, 4vw, 4rem);
             font-weight: 700; color: #fff; line-height: 1;
+            font-variant-numeric: tabular-nums;
         }
         .countdown-label {
             display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
@@ -280,30 +299,35 @@
         /* --- 3D GARAGE CARDS --- */
         .garage-grid {
             display: grid; 
-            /* FIXED: Use auto-fit to stretch cards equally, and reduced min-width to 300px for better fit */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem; /* Reduced gap */
-            height: 100%; overflow-y: auto; padding: 1rem;
-            scrollbar-width: none; perspective: 1000px;
-            /* REMOVED GLOBAL PERSPECTIVE TO FIX ALIGNMENT/PARALLAX ISSUE */
-            perspective: none; 
+            /* Mobile/Tablet: Responsive wrapping */
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem; 
+            height: 100%; overflow-y: auto; padding: 0.5rem 1rem 2rem 1rem;
+            scrollbar-width: none; 
+            /* Ensure rows are equal height */
+            grid-auto-rows: 1fr;
         }
-        /* Force 5 columns (2 rows) on larger screens */
-        @media (min-width: 1400px) {
+        
+        /* Desktop: Force exactly 5 columns (2 rows for 10 teams) */
+        @media (min-width: 1200px) {
             .garage-grid {
                 grid-template-columns: repeat(5, 1fr);
             }
         }
+        
         .garage-grid::-webkit-scrollbar { display: none; }
 
         .constructor-card {
             background: linear-gradient(145deg, rgba(30,30,30,0.6) 0%, rgba(10,10,10,0.8) 100%);
             border: 1px solid var(--glass-border); border-radius: 12px;
-            padding: 1rem; /* Reduced padding */
+            padding: 1.2rem;
             display: flex; flex-direction: column; position: relative;
             transform-style: preserve-3d; transition: transform 0.1s linear, box-shadow 0.3s ease;
-            cursor: none; /* Uses custom cursor */
+            cursor: none;
             will-change: transform;
+            /* Ensure card fills the grid cell height */
+            height: 100%;
+            justify-content: space-between;
         }
         /* Dynamic Team Glow */
         .constructor-card::after {
@@ -315,31 +339,39 @@
         .constructor-card:hover::after { opacity: 0.2; }
 
         .cc-bg-rank {
-            position: absolute; top: -1rem; right: 1rem; font-size: 6rem; /* Smaller rank number */
+            position: absolute; top: -0.5rem; right: 0.5rem; font-size: 5rem;
             font-family: 'Rajdhani', sans-serif; font-weight: 800;
-            color: rgba(255,255,255,0.02); z-index: 0; pointer-events: none;
+            color: rgba(255,255,255,0.03); z-index: 0; pointer-events: none;
             transform: translateZ(20px);
         }
         .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; position: relative; z-index: 2; transform: translateZ(30px); }
-        .cc-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; }
+        .cc-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
         .cc-points {
-            color: var(--team-color, var(--accent-cyan)); font-family: 'JetBrains Mono', monospace; font-weight: 700;
-            background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 4px;
+            color: var(--team-color, var(--accent-cyan)); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.9rem;
+            background: rgba(0,0,0,0.5); padding: 0.2rem 0.4rem; border-radius: 4px;
         }
-        /* FIXED: Added fixed height to image container for uniform card size */
+        
+        /* FIXED: Tighter, perfectly centered image container */
         .cc-img-container {
-            flex-grow: 1; display: flex; align-items: center; justify-content: center;
-            margin: 0.5rem 0; /* Reduced margin */
-            position: relative; z-index: 1; transform: translateZ(50px);
-            height: 100px; /* Fixed height */
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            margin: 0; 
+            position: relative; 
+            z-index: 1; 
+            transform: translateZ(50px);
+            height: 90px; /* Fixed height for uniformity */
             width: 100%;
         }
-        /* FIXED: Updated image styling to align perfectly center */
+        /* FIXED: Images scale to fit without stretching */
         .cc-car-img { 
-            width: 100%; 
-            height: 100%; 
+            width: auto;
+            height: auto;
+            max-width: 100%; 
+            max-height: 100%; 
             object-fit: contain; 
-            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.6)); 
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); 
         }
 
         /* --- ACCORDION STYLE DOTD (HOVER BASED) --- */
@@ -768,7 +800,8 @@
     <div class="cinematic-grain"></div>
 
     <div class="fixed-ui">
-        <img src="https://raw.githubusercontent.com/HARISHWINNER/TTRL/ade50d630c482acbb96676fc69c2849a58494f7f/RESOURCES/image.png" alt="TTRL" class="logo hover-target">
+        <!-- UPDATED: Added ID for click functionality -->
+        <img id="app-logo" src="https://raw.githubusercontent.com/HARISHWINNER/TTRL/ade50d630c482acbb96676fc69c2849a58494f7f/RESOURCES/image.png" alt="TTRL" class="logo hover-target">
         <div class="header-right">
             <!-- NEW TOP NAVIGATION LINKS -->
             <div class="top-nav">
@@ -851,7 +884,10 @@
             <div class="slide-bg" style="background-image: url('https://raw.githubusercontent.com/S-HARISH44/TTRL/577532eaacf8de58ca32f2b9e5d0112cf71a3689/RESOURCES/001-EA-Sports-F1-2023-Video-Game-Review.jpg')"></div>
             <div class="slide-content" style="align-items: center; text-align: center;">
                 <div class="slide-tag" id="hero-next-tag">NEXT RACE // LOADING...</div>
-                <h1 class="slide-title tech-font glitch-effect" data-text="TURBO TRIBE">TURBO<br><span class="text-outline">TRIBE</span></h1>
+                <h1 class="slide-title tech-font">
+                    <span class="glitch-effect" data-text="TURBO">TURBO</span><br>
+                    <span class="text-outline glitch-effect" data-text="TRIBE">TRIBE</span>
+                </h1>
                 
                 <div class="countdown-grid hover-target" id="hero-countdown">
                     <div class="countdown-item"><span class="countdown-val" id="cd-days">00</span><span class="countdown-label">DAYS</span></div>
@@ -921,7 +957,10 @@
             <div class="slide-bg" id="vanta-bg"></div>
             <div class="slide-content">
                 <div class="slide-tag">05 // PADDOCK</div>
-                <h2 class="slide-title tech-font glitch-effect" data-text="CONNECT">CONNECT<br><span class="text-outline">WITH US</span></h2>
+                <h2 class="slide-title tech-font">
+                    <span class="glitch-effect" data-text="CONNECT">CONNECT</span><br>
+                    <span class="text-outline glitch-effect" data-text="WITH US">WITH US</span>
+                </h2>
                 <p class="slide-desc">Join our Discord server for live race updates.</p>
                 <div class="contact-grid mono-font">
                     <a href="https://discord.gg/EuyPTXqbg6" target="_blank" class="contact-item hover-target"><i class="fa-brands fa-discord"></i> <span>DISCORD</span></a>
@@ -1533,7 +1572,7 @@
             });
 
             // Hover effects
-            const hoverTargets = document.querySelectorAll('a, button, .hover-target, .tab-btn, .team-radio-btn, .api-btn, .api-input');
+            const hoverTargets = document.querySelectorAll('a, button, .hover-target, .tab-btn, .team-radio-btn');
             hoverTargets.forEach(el => {
                 el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
                 el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
@@ -1863,6 +1902,9 @@
 
         // --- Event Listeners ---
         document.getElementById('start-engine-btn').addEventListener('click', () => gotoSlide(1));
+
+        // NEW: Logo click takes user to Home
+        document.getElementById('app-logo').addEventListener('click', () => gotoSlide(0));
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
