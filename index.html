@@ -157,10 +157,10 @@
             display: flex; flex-direction: column; justify-content: center; height: 100%;
         }
         
-        /* Layout Fix for Standings Slide */
+        /* Layout Fix for Standings Slide - UPDATED: Reduced padding-top to move list higher */
         #slide-2 .slide-content {
             justify-content: flex-start;
-            padding-top: 12vh;
+            padding-top: 8vh; /* Was 12vh */
         }
         #slide-2 .slide-title {
             font-size: clamp(3rem, 6vw, 6rem);
@@ -247,7 +247,8 @@
         }
 
         /* --- STANDINGS --- */
-        .standings-wrapper { width: 100%; height: 65vh; margin-top: 1rem; position: relative; }
+        /* UPDATED: Increased height to use more screen space */
+        .standings-wrapper { width: 100%; height: 72vh; margin-top: 0.5rem; position: relative; }
         .standings-view {
             position: absolute; inset: 0; width: 100%; height: 100%;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -281,17 +282,25 @@
             display: grid; 
             /* FIXED: Use auto-fit to stretch cards equally, and reduced min-width to 300px for better fit */
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem; height: 100%; overflow-y: auto; padding: 1rem;
+            gap: 1rem; /* Reduced gap */
+            height: 100%; overflow-y: auto; padding: 1rem;
             scrollbar-width: none; perspective: 1000px;
             /* REMOVED GLOBAL PERSPECTIVE TO FIX ALIGNMENT/PARALLAX ISSUE */
             perspective: none; 
+        }
+        /* Force 5 columns (2 rows) on larger screens */
+        @media (min-width: 1400px) {
+            .garage-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
         }
         .garage-grid::-webkit-scrollbar { display: none; }
 
         .constructor-card {
             background: linear-gradient(145deg, rgba(30,30,30,0.6) 0%, rgba(10,10,10,0.8) 100%);
             border: 1px solid var(--glass-border); border-radius: 12px;
-            padding: 1.5rem; display: flex; flex-direction: column; position: relative;
+            padding: 1rem; /* Reduced padding */
+            display: flex; flex-direction: column; position: relative;
             transform-style: preserve-3d; transition: transform 0.1s linear, box-shadow 0.3s ease;
             cursor: none; /* Uses custom cursor */
             will-change: transform;
@@ -306,13 +315,13 @@
         .constructor-card:hover::after { opacity: 0.2; }
 
         .cc-bg-rank {
-            position: absolute; top: -1rem; right: 1rem; font-size: 8rem;
+            position: absolute; top: -1rem; right: 1rem; font-size: 6rem; /* Smaller rank number */
             font-family: 'Rajdhani', sans-serif; font-weight: 800;
             color: rgba(255,255,255,0.02); z-index: 0; pointer-events: none;
             transform: translateZ(20px);
         }
-        .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; position: relative; z-index: 2; transform: translateZ(30px); }
-        .cc-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.5rem; }
+        .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; position: relative; z-index: 2; transform: translateZ(30px); }
+        .cc-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; }
         .cc-points {
             color: var(--team-color, var(--accent-cyan)); font-family: 'JetBrains Mono', monospace; font-weight: 700;
             background: rgba(0,0,0,0.5); padding: 0.2rem 0.5rem; border-radius: 4px;
@@ -320,13 +329,14 @@
         /* FIXED: Added fixed height to image container for uniform card size */
         .cc-img-container {
             flex-grow: 1; display: flex; align-items: center; justify-content: center;
-            margin: 1rem 0; position: relative; z-index: 1; transform: translateZ(50px);
-            height: 130px; /* Ensures consistent height */
+            margin: 0.5rem 0; /* Reduced margin */
+            position: relative; z-index: 1; transform: translateZ(50px);
+            height: 100px; /* Fixed height */
+            width: 100%;
         }
         /* FIXED: Updated image styling to align perfectly center */
         .cc-car-img { 
-            width: auto; 
-            max-width: 100%; 
+            width: 100%; 
             height: 100%; 
             object-fit: contain; 
             filter: drop-shadow(0 15px 15px rgba(0,0,0,0.6)); 
@@ -1523,7 +1533,7 @@
             });
 
             // Hover effects
-            const hoverTargets = document.querySelectorAll('a, button, .hover-target, .tab-btn, .team-radio-btn');
+            const hoverTargets = document.querySelectorAll('a, button, .hover-target, .tab-btn, .team-radio-btn, .api-btn, .api-input');
             hoverTargets.forEach(el => {
                 el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
                 el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
