@@ -1,1 +1,1 @@
-# League
+https://turbotriberacingleague.github.io/TTRL/
