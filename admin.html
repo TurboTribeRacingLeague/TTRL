@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TTRL | Mission Control</title>
     
-    <!-- Fonts: Clean & Professional -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&family=JetBrains+Mono:wght@500;700&family=Orbitron:wght@900&display=swap" rel="stylesheet">
@@ -23,64 +23,37 @@
             --bg-body: #e2e8f0;      
             --bg-panel: #ffffff;
             --bg-header: #f8fafc;
-            
             --sidebar-bg: #0f172a;   
             --sidebar-text: #94a3b8;
             --sidebar-text-active: #ffffff;
-            
             --border-dim: #e2e8f0;
             --border-light: #cbd5e1;
-            
             --accent-cyan: #0ea5e9;  
             --accent-red: #ef4444;   
             --accent-green: #10b981; 
             --accent-yellow: #f59e0b; 
             --accent-purple: #8b5cf6; 
-            
             --text-primary: #1e293b;  
             --text-secondary: #475569; 
             --text-muted: #94a3b8;    
-
             --font-display: 'Manrope', sans-serif; 
             --font-ui: 'Inter', sans-serif;
             --font-data: 'JetBrains Mono', monospace;
-
             --sidebar-width: 260px;
             --sidebar-width-collapsed: 72px;
             --header-height: 70px;
-            
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-
-        /* --- GLOBAL RESET --- */
         * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
-        
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            font-family: var(--font-ui);
-            height: 100vh;
-            overflow: hidden;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
-
+        body { background-color: var(--bg-body); color: var(--text-primary); font-family: var(--font-ui); height: 100vh; overflow: hidden; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 24px 24px; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* --- LAYOUT --- */
         .app-layout { display: flex; height: 100vh; width: 100vw; opacity: 0; transition: opacity 0.5s ease; }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid #1e293b;
-            display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 50; box-shadow: var(--shadow-md);
-        }
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid #1e293b; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50; box-shadow: var(--shadow-md); }
         .sidebar.collapsed { width: var(--sidebar-width-collapsed); }
         .logo-area { height: var(--header-height); display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,0.1); gap: 12px; overflow: hidden; background: rgba(0,0,0,0.2); }
         .logo-img { height: 36px; width: auto; object-fit: contain; }
@@ -105,8 +78,6 @@
         .sidebar.collapsed .user-panel .btn { justify-content: center; padding: 10px; }
         .sidebar.collapsed .user-panel .btn span { display: none; }
         .sidebar.collapsed .user-panel .btn i { margin: 0; }
-
-        /* --- MAIN WRAPPER --- */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .top-bar { height: var(--header-height); border-bottom: 1px solid var(--border-dim); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; background: #fff; box-shadow: var(--shadow-sm); z-index: 40; }
         .toggle-sidebar { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
@@ -116,8 +87,6 @@
         .season-input { background: none; border: none; color: var(--text-primary); font-family: var(--font-display); font-weight: 800; font-size: 1rem; text-transform: uppercase; width: 100px; text-align: center; }
         .season-input:focus { color: var(--accent-cyan); }
         .action-cluster { display: flex; gap: 12px; }
-
-        /* --- COMPONENTS --- */
         .btn { background: #fff; border: 1px solid var(--border-dim); color: var(--text-secondary); padding: 8px 16px; font-family: var(--font-ui); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; }
         .btn:hover { border-color: var(--border-light); color: var(--text-primary); background: #f8fafc; transform: translateY(-1px); }
         .btn-primary { background: var(--accent-cyan); color: #fff; border: 1px solid var(--accent-cyan); }
@@ -126,76 +95,57 @@
         .btn-danger:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
         .btn-success { color: var(--accent-green); border-color: #a7f3d0; background: #ecfdf5; }
         .btn-success:hover { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
-
         .workspace { flex: 1; padding: 32px; overflow-y: auto; position: relative; }
         .section { display: none; animation: fadeIn 0.4s ease-out; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
         .panel { background: #fff; border: 1px solid var(--border-dim); border-radius: 12px; margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
         .panel-header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-header); padding: 16px 24px; border-bottom: 1px solid var(--border-dim); }
         .panel-body { padding: 24px; }
         .panel-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
         .panel-title i { color: var(--accent-cyan); font-size: 1.1rem; }
-
         .dashboard-grid-full { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px; }
         .dashboard-split { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; height: calc(100vh - 140px); min-height: 600px; }
         .dash-left { overflow-y: auto; display: flex; flex-direction: column; gap: 24px; padding-right: 5px; }
         .dash-right { position: relative; background: rgba(0,0,0,0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-dim); }
-
         .stat-card { background: #fff; border: 1px solid var(--border-dim); padding: 24px; border-radius: 12px; position: relative; overflow: hidden; transition: transform 0.2s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; }
         .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
         .stat-icon { position: absolute; right: -10px; top: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg); color: var(--text-primary); }
         .stat-label { font-family: var(--font-ui); font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
         .stat-value { font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
         .stat-footer { margin-top: 12px; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-weight: 600; }
-        
         .card-accent-blue { background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%); border-top: 4px solid var(--accent-cyan); }
         .card-accent-red { background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); border-top: 4px solid var(--accent-red); }
         .card-accent-green { background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border-top: 4px solid var(--accent-green); }
         .card-accent-purple { background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%); border-top: 4px solid var(--accent-purple); }
-
         .input-group { margin-bottom: 16px; }
         .input-label { display: block; font-family: var(--font-ui); font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; font-weight: 700; }
         .form-control { width: 100%; background: #f8fafc; border: 1px solid var(--border-dim); color: var(--text-primary); padding: 10px 14px; font-family: var(--font-ui); font-size: 0.95rem; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
         .form-control:focus { border-color: var(--accent-cyan); background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
-
         .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        
-        /* Updated Driver Card: Outer Border Color */
         .driver-card { background: #fff; border: 2px solid var(--team-color, #94a3b8); border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
         .driver-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .driver-info { position: relative; z-index: 2; }
         .driver-info h4 { font-family: var(--font-display); font-size: 1.1rem; margin: 0; font-weight: 700; color: var(--text-primary); }
         .driver-info p { font-family: var(--font-ui); font-size: 0.8rem; color: var(--team-color); filter: brightness(0.8); margin: 4px 0 0; text-transform: uppercase; font-weight: 800; }
-        
-        /* High Z-Index for Delete button so it floats above any potential overlaps */
         .icon-btn { position: relative; z-index: 10; background: #fff; border: 1px solid var(--border-dim); color: var(--text-muted); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.2s; }
         .icon-btn:hover { background: #f1f5f9; color: var(--text-primary); border-color: var(--accent-cyan); }
         .icon-btn.delete:hover { background: #fef2f2; border-color: #fecaca; color: var(--accent-red); }
-        
-        /* Team Strip for Editor Rows */
         .team-strip { width: 8px; height: 100%; position: absolute; left: 0; top: 0; background: var(--team-color, #ccc); }
-
         .tech-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: var(--font-ui); font-size: 0.9rem; }
         .tech-table th { text-align: left; padding: 16px 20px; color: var(--text-secondary); font-family: var(--font-ui); font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--border-dim); font-weight: 800; letter-spacing: 0.5px; background: #f8fafc; }
         .tech-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-dim); color: var(--text-primary); font-weight: 500; }
         .tech-table tr:hover td { background: #f8fafc; }
         .tech-table tr:last-child td { border-bottom: none; }
-
-        /* --- MODALS & TOAST --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; }
         .modal-box { background: #fff; border: 1px solid var(--border-dim); width: 90%; max-width: 480px; padding: 32px; border-radius: 16px; box-shadow: var(--shadow-lg); text-align: center; }
         .modal-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--text-primary); margin-bottom: 12px; font-weight: 800; }
         .toast { position: fixed; bottom: 30px; right: 30px; background: #0f172a; border: 1px solid #1e293b; border-left: 5px solid var(--accent-green); padding: 16px 24px; color: #ffffff; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; font-family: var(--font-ui); font-weight: 600; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); border-radius: 8px; display: flex; align-items: center; gap: 10px; }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast i { color: var(--accent-green); font-size: 1.1rem; }
-
-        /* --- LOGIN SCREEN --- */
         #login-screen { position: fixed; inset: 0; z-index: 999; background: #f1f5f9; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 20px 20px; }
         .login-card { width: 420px; padding: 48px; background: #fff; border: 1px solid var(--border-dim); border-top: 4px solid var(--accent-cyan); box-shadow: var(--shadow-lg); border-radius: 12px; text-align: center; }
         .login-logo { height: 64px; margin-bottom: 24px; }
-
         @media (max-width: 900px) {
             .app-layout { flex-direction: column; height: auto; min-height: 100vh; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-dim); }
@@ -331,7 +281,8 @@
 
         // GLOBAL BINDINGS
         window.checkLogin = () => {
-            const email = document.getElementById("loginEmail").value;
+            // FIXED: Ensure email is lowercase to match Firestore ID format
+            const email = document.getElementById("loginEmail").value.toLowerCase().trim();
             const pass = document.getElementById("loginPass").value;
             signInWithEmailAndPassword(auth, email, pass).catch(e => document.getElementById("login-msg").innerText = "ACCESS DENIED: " + e.message);
         };
@@ -368,10 +319,17 @@
             "kick-sauber": "#52E252", "haas": "#5B5B5B", "reserve": "#666666"
         };
         const TEAMS = [
-            {id:'red-bull-racing', name:'Red Bull Racing'}, {id:'ferrari', name:'Ferrari'}, {id:'mercedes', name:'Mercedes-AMG'},
-            {id:'mclaren', name:'McLaren'}, {id:'aston-martin', name:'Aston Martin'}, {id:'alpine', name:'Alpine'},
-            {id:'williams', name:'Williams'}, {id:'racing-bulls', name:'Visa Cash App RB'}, {id:'kick-sauber', name:'Kick Sauber'},
-            {id:'haas', name:'Haas F1 Team'}, {id:'reserve', name:'Reserve Driver'}
+            {id:'red-bull-racing', name:'Red Bull Racing', short:'Red Bull'}, 
+            {id:'ferrari', name:'Ferrari', short:'Ferrari'}, 
+            {id:'mercedes', name:'Mercedes-AMG', short:'Mercedes'},
+            {id:'mclaren', name:'McLaren', short:'McLaren'}, 
+            {id:'aston-martin', name:'Aston Martin', short:'Aston Martin'}, 
+            {id:'alpine', name:'Alpine', short:'Alpine'},
+            {id:'williams', name:'Williams', short:'Williams'}, 
+            {id:'racing-bulls', name:'Visa Cash App RB', short:'VCARB'}, 
+            {id:'kick-sauber', name:'Kick Sauber', short:'Sauber'},
+            {id:'haas', name:'Haas F1 Team', short:'Haas'}, 
+            {id:'reserve', name:'Reserve Driver', short:'Reserve'}
         ];
 
         const MASTER_TRACK_LIST = [
@@ -402,18 +360,35 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const adminDocRef = doc(db, "Admin", user.email);
+                    // Force lowercase email lookup to match Firestore ID format
+                    const emailKey = user.email.toLowerCase();
+                    const adminDocRef = doc(db, "Admin", emailKey);
                     const docSnap = await getDoc(adminDocRef); 
+                    
                     if (docSnap.exists()) {
-                        document.getElementById("login-screen").style.display = "none";
-                        document.getElementById("main-interface").style.display = "flex";
-                        setTimeout(() => document.getElementById("main-interface").style.opacity = "1", 50);
-                        document.getElementById("userName").innerText = (user.displayName || user.email.split('@')[0]).toUpperCase(); 
-                        initApp();
-                    } else { throw new Error("Doc ID match failed"); }
+                        const adminData = docSnap.data();
+                        
+                        // NEW CHECK: Verify the 'role' field is exactly "Admin"
+                        if (adminData.role === "Admin") {
+                            document.getElementById("login-screen").style.display = "none";
+                            document.getElementById("main-interface").style.display = "flex";
+                            setTimeout(() => document.getElementById("main-interface").style.opacity = "1", 50);
+                            document.getElementById("userName").innerText = (user.displayName || user.email.split('@')[0]).toUpperCase(); 
+                            initApp();
+                        } else {
+                            throw new Error("Insufficient Permissions: Role is not Admin");
+                        }
+                    } else { 
+                        throw new Error("User not found in Admin database"); 
+                    }
                 } catch (error) {
                     console.warn("Access verification failed:", error);
-                    signOut(auth).then(() => { document.getElementById("login-msg").innerText = "UNAUTHORIZED OPERATOR"; document.getElementById("login-screen").style.display = "flex"; });
+                    signOut(auth).then(() => { 
+                        const msgDiv = document.getElementById("login-msg");
+                        msgDiv.innerText = "ACCESS DENIED: " + (error.message || "Unauthorized");
+                        msgDiv.style.color = "var(--accent-red)";
+                        document.getElementById("login-screen").style.display = "flex"; 
+                    });
                 }
             } else { 
                 document.getElementById("login-screen").style.display = "flex"; 
