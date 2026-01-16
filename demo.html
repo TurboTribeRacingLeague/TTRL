@@ -47,7 +47,7 @@
             --accent-purple: #8b5cf6; 
             --text-primary: #1e293b;  
             --text-secondary: #475569; 
-            --text-muted: #94a3b8;    
+            --text-muted: #94a3b8;     
             --font-display: 'Manrope', sans-serif; 
             --font-ui: 'Inter', sans-serif;
             --font-data: 'JetBrains Mono', monospace;
@@ -96,7 +96,7 @@
         .toggle-sidebar:hover { color: var(--accent-cyan); transform: scale(1.1); }
         .season-control { display: flex; align-items: center; gap: 12px; background: #f1f5f9; padding: 6px 16px; border: 1px solid var(--border-dim); border-radius: 8px; }
         .season-label { font-family: var(--font-ui); font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .season-input { background: none; border: none; color: var(--text-primary); font-family: var(--font-display); font-weight: 800; font-size: 1rem; text-transform: uppercase; width: 100px; text-align: center; }
+        .season-input { background: none; border: none; color: var(--text-primary); font-family: var(--font-display); font-weight: 800; font-size: 1rem; text-transform: uppercase; width: 140px; text-align: center; }
         .season-input:focus { color: var(--accent-cyan); }
         .action-cluster { display: flex; gap: 12px; }
         .btn { background: #fff; border: 1px solid var(--border-dim); color: var(--text-secondary); padding: 8px 16px; font-family: var(--font-ui); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; }
@@ -181,7 +181,7 @@
             font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
         }
         #rg_preview-title {
-            position: absolute; top: 71px; left: 30px;
+            position: absolute; top: 85px; left: 30px; /* Adjusted: Moved down from 71px */
             font-family: 'Orbitron', sans-serif; font-size: 33px; font-weight: 900;
             white-space: nowrap; letter-spacing: 0.5px; margin: 0; line-height: 1;
         }
@@ -265,13 +265,56 @@
 
         <div class="main-wrapper">
             <header class="top-bar">
-                <div style="display: flex; align-items: center; gap: 20px;"><button class="toggle-sidebar" onclick="window.toggleSidebar()"><i class="fas fa-bars"></i></button><div class="season-control"><span class="season-label">ACTIVE SEASON:</span><input type="text" id="seasonInput" class="season-input" value="season_1" onchange="window.changeSeason()"><button class="icon-btn" onclick="window.changeSeason()"><i class="fas fa-sync-alt"></i></button></div><div id="knownSeasonsList" style="font-family: var(--font-data); font-size: 0.75rem; color: var(--text-muted);"></div></div>
-                <div class="action-cluster"><button class="btn" onclick="window.openMigrationModal()"><i class="fas fa-exchange-alt"></i> MIGRATE</button><button class="btn" onclick="window.triggerImport()"><i class="fas fa-file-import"></i> IMPORT CSV</button><button class="btn" onclick="window.exportData()"><i class="fas fa-download"></i> BACKUP</button><input type="file" id="csvFile" accept=".csv" style="display:none" onchange="window.handleFileSelect(this)"></div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="toggle-sidebar" onclick="window.toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <!-- UPDATED SEASON CONTROL -->
+                    <div class="season-control">
+                        <span class="season-label">ACTIVE SEASON:</span>
+                        <!-- Input linked to datalist for typing OR selecting -->
+                        <input type="text" id="seasonInput" class="season-input" list="seasonOptions" placeholder="SELECT / NEW" onchange="window.changeSeason()">
+                        <datalist id="seasonOptions">
+                            <!-- Populated by JS from Firebase -->
+                        </datalist>
+                        
+                        <!-- Button to force reload the specific season -->
+                        <button class="icon-btn" onclick="window.changeSeason()" title="Load Season">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        
+                        <!-- Button to refresh the list of available seasons -->
+                        <button class="icon-btn" onclick="window.refreshSeasonList()" title="Refresh Season List" style="margin-left:5px; opacity:0.7;">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="seasonStatusMsg" style="font-family: var(--font-data); font-size: 0.75rem; color: var(--accent-green); font-weight:700;"></div>
+                </div>
+
+                <div class="action-cluster">
+                    <button class="btn" onclick="window.openMigrationModal()"><i class="fas fa-exchange-alt"></i> MIGRATE</button>
+                    <button class="btn" onclick="window.triggerImport()"><i class="fas fa-file-import"></i> IMPORT CSV</button>
+                    <button class="btn" onclick="window.exportData()"><i class="fas fa-download"></i> BACKUP</button>
+                    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="window.handleFileSelect(this)">
+                </div>
             </header>
 
             <div class="workspace">
                 <div id="dashboard" class="section active">
                     <div class="panel-header" style="border:none; margin-bottom: 10px;"><div><h2 style="font-family:var(--font-display); font-weight:800; font-size:1.8rem; color:var(--text-primary); margin:0;">MISSION OVERVIEW</h2><div style="font-family:var(--font-ui); color:var(--text-secondary); font-size:0.9rem;" id="dashNextDate">SEASON ACTIVE</div></div></div>
+                    
+                    <!-- ADDED: Available Seasons List Panel -->
+                    <div class="panel" style="margin-bottom: 24px;">
+                        <div class="panel-header"><div class="panel-title"><i class="fas fa-list"></i> AVAILABLE SEASONS</div></div>
+                        <div class="panel-body">
+                            <div id="dashSeasonsBody" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <!-- Populated by JS -->
+                                <span style="color:var(--text-muted); font-size:0.9rem;">Fetching seasons...</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="dashboard-grid-full">
                         <div class="stat-card card-accent-blue"><i class="fas fa-users stat-icon"></i><div class="stat-label">GRID SIZE</div><div class="stat-value" id="dashDriverCount">0</div><div class="stat-footer positive"><i class="fas fa-check"></i> Active Drivers</div></div>
                         <div class="stat-card card-accent-green"><i class="fas fa-map-location-dot stat-icon"></i><div class="stat-label">CALENDAR</div><div class="stat-value" id="dashTrackCount">0</div><div class="stat-footer"><i class="fas fa-flag"></i> Scheduled Races</div></div>
@@ -335,11 +378,13 @@
                         </div>
                         <div class="panel-body">
                             <!-- INTEGRATED GENERATOR CONTAINER -->
+                            <!-- CHANGED LAYOUT: Vertical Stack (tw-flex-col) and Removed xl:tw-flex-row -->
                             <div id="rg_container" class="tw-w-full tw-bg-gray-900 tw-text-white tw-font-sans tw-p-4 tw-rounded-xl">
-                                <div class="tw-flex tw-flex-col xl:tw-flex-row tw-gap-6 tw-p-4">
+                                <div class="tw-flex tw-flex-col tw-gap-6 tw-p-4">
                                     
-                                    <!-- GENERATOR CONTROLS -->
-                                    <div class="tw-w-full xl:tw-w-1/3 tw-bg-gray-800 tw-p-5 tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-700 tw-h-fit">
+                                    <!-- GENERATOR CONTROLS (Full Width Top) -->
+                                    <!-- Changed width to tw-w-full and removed xl width restrictions -->
+                                    <div class="tw-w-full tw-bg-gray-800 tw-p-5 tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-700 tw-h-fit">
                                         <div class="tw-mb-6">
                                             <h3 class="tw-text-lg tw-font-bold tw-text-red-500 tw-mb-3 tw-border-b tw-border-gray-700 tw-pb-1">Event Details</h3>
                                             <div class="tw-space-y-3">
@@ -383,8 +428,8 @@
                                         </div>
                                     </div>
 
-                                    <!-- GENERATOR PREVIEW -->
-                                    <div class="tw-w-full xl:tw-w-2/3">
+                                    <!-- GENERATOR PREVIEW (Full Width Bottom) -->
+                                    <div class="tw-w-full">
                                         <div class="tw-bg-gray-800 tw-p-1 tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-700 tw-overflow-x-auto">
                                             <div class="tw-min-w-max tw-p-4">
                                                 <div id="rg_result-card">
@@ -537,11 +582,76 @@
         });
 
         // --- INITIALIZATION ---
-        function initApp() {
-            renderKnownSeasons();
+        window.initApp = async function() {
             populateDropdowns();
+            await refreshSeasonList(); // Fetch available seasons from Firebase first
+            
+            // Default to season_1 if input is empty, or keep current value
+            const currentInput = document.getElementById("seasonInput").value;
+            if(!currentInput) {
+                document.getElementById("seasonInput").value = "season_1";
+            }
             changeSeason();
         }
+
+        // --- NEW: FETCH SEASONS FROM FIREBASE ---
+        window.refreshSeasonList = async () => {
+            const listEl = document.getElementById('seasonOptions');
+            const dashListEl = document.getElementById('dashSeasonsBody');
+            const statusEl = document.getElementById('seasonStatusMsg');
+            
+            // Visual loading state
+            if(statusEl) statusEl.innerText = "FETCHING LIST...";
+            listEl.innerHTML = ''; 
+            if(dashListEl) dashListEl.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Fetching...</span>';
+
+            try {
+                // Get all documents in the 'seasons' collection
+                const q = query(collection(db, "seasons"));
+                const querySnapshot = await getDocs(q);
+                
+                const seasonsFound = [];
+                if(dashListEl) dashListEl.innerHTML = ''; // Clear dash list
+                
+                querySnapshot.forEach((doc) => {
+                    seasonsFound.push(doc.id);
+                    
+                    // Add to Top Bar Datalist
+                    const opt = document.createElement('option');
+                    opt.value = doc.id;
+                    listEl.appendChild(opt);
+
+                    // Add to Dashboard Visible List
+                    if(dashListEl) {
+                        const sBtn = document.createElement('button');
+                        sBtn.className = 'btn';
+                        sBtn.style.cssText = 'background:#f8fafc; border:1px solid var(--border-dim); font-size:0.85rem; text-transform:uppercase; font-weight:700;';
+                        sBtn.innerHTML = `<i class="fas fa-folder"></i> ${doc.id}`;
+                        sBtn.onclick = () => {
+                            document.getElementById('seasonInput').value = doc.id;
+                            window.changeSeason();
+                        };
+                        dashListEl.appendChild(sBtn);
+                    }
+                });
+
+                if(seasonsFound.length === 0 && dashListEl) {
+                    dashListEl.innerHTML = '<span style="color:var(--text-muted);">No seasons found. Type a name above to create one.</span>';
+                }
+
+                // Update internal tracking
+                knownSeasons = seasonsFound;
+                if(statusEl) statusEl.innerText = `FOUND ${seasonsFound.length} SEASONS`;
+                setTimeout(() => { if(statusEl) statusEl.innerText = ""; }, 2000);
+
+            } catch(e) {
+                console.error("Error fetching seasons:", e);
+                if(statusEl) {
+                    statusEl.innerText = "ERROR FETCHING LIST";
+                    statusEl.style.color = "var(--accent-red)";
+                }
+            }
+        };
 
         // --- HELPER FUNCTIONS ---
         // Internal helper, not needed in global scope
@@ -607,23 +717,38 @@
             document.getElementById("editorMainTeam").innerHTML = teamOptions;
         }
 
+        // --- UPDATED: CHANGE SEASON LOGIC ---
         window.changeSeason = async () => {
-            const inputVal = document.getElementById("seasonInput").value.trim().toLowerCase().replace(/\s+/g, '_');
+            let inputVal = document.getElementById("seasonInput").value.trim();
+            
             if(!inputVal) return;
+            
+            // Normalize ID: lowercase and underscores instead of spaces
+            inputVal = inputVal.toLowerCase().replace(/\s+/g, '_');
+            
+            // Update the input box to show the normalized ID
+            document.getElementById("seasonInput").value = inputVal;
+            
             currentSeason = inputVal;
-            if(!knownSeasons.includes(currentSeason)) {
-                knownSeasons.push(currentSeason);
-                localStorage.setItem('ttrl_seasons', JSON.stringify(knownSeasons));
-                renderKnownSeasons();
+            
+            // Visual feedback
+            const statusEl = document.getElementById('seasonStatusMsg');
+            if(statusEl) {
+                statusEl.style.color = "var(--accent-cyan)";
+                statusEl.innerText = "LOADING DATA...";
             }
-            await loadTrackConfig();
-            initListener(); 
-        };
 
-        function renderKnownSeasons() {
-            const c = document.getElementById("knownSeasonsList");
-            c.innerHTML = knownSeasons.map(s => `<span style="cursor:pointer; margin-right:10px; opacity:0.6;" onclick="document.getElementById('seasonInput').value='${s}';changeSeason()">${s.toUpperCase()}</span>`).join('| ');
-        }
+            // Load Data
+            await loadTrackConfig();
+            initListener(); // Reload drivers for this season
+            
+            // Update Dashboard UI text
+            const dashDate = document.getElementById("dashNextDate");
+            if(dashDate) dashDate.innerText = `ACTIVE: ${currentSeason.toUpperCase()}`;
+
+            if(statusEl) statusEl.innerText = "READY";
+            setTimeout(() => { if(statusEl) statusEl.innerText = ""; }, 1500);
+        };
 
         async function loadTrackConfig() {
             const list = document.getElementById("trackConfigList");
@@ -659,14 +784,14 @@
                 safeSet('dashLeader', leader.name.toUpperCase());
                 safeSet('dashLeaderPts', `${leader.totalPoints} PTS`);
                 allDrivers.forEach(d => {
-                     const results = d.results || {};
-                     let dWins = 0;
-                     Object.values(results).forEach(r => {
-                         const p = (typeof r === 'object') ? r.points : r;
-                         if(p > 0) { totalEntries++; totalPointsScored += p; }
-                         if(p >= 25) dWins++; 
-                     });
-                     if(dWins > mostWins.count) mostWins = { name: d.name, count: dWins };
+                      const results = d.results || {};
+                      let dWins = 0;
+                      Object.values(results).forEach(r => {
+                          const p = (typeof r === 'object') ? r.points : r;
+                          if(p > 0) { totalEntries++; totalPointsScored += p; }
+                          if(p >= 25) dWins++; 
+                      });
+                      if(dWins > mostWins.count) mostWins = { name: d.name, count: dWins };
                 });
             } else { safeSet('dashLeader', "--"); safeSet('dashLeaderPts', "0 PTS"); }
 
