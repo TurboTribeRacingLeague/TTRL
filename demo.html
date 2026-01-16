@@ -96,7 +96,7 @@
         .toggle-sidebar:hover { color: var(--accent-cyan); transform: scale(1.1); }
         .season-control { display: flex; align-items: center; gap: 12px; background: #f1f5f9; padding: 6px 16px; border: 1px solid var(--border-dim); border-radius: 8px; }
         .season-label { font-family: var(--font-ui); font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .season-input { background: none; border: none; color: var(--text-primary); font-family: var(--font-display); font-weight: 800; font-size: 1rem; text-transform: uppercase; width: 140px; text-align: center; }
+        .season-input { background: none; border: none; color: var(--text-primary); font-family: var(--font-display); font-weight: 800; font-size: 1rem; text-transform: uppercase; width: 180px; text-align: center; }
         .season-input:focus { color: var(--accent-cyan); }
         .action-cluster { display: flex; gap: 12px; }
         .btn { background: #fff; border: 1px solid var(--border-dim); color: var(--text-secondary); padding: 8px 16px; font-family: var(--font-ui); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; }
@@ -273,11 +273,8 @@
                     <!-- UPDATED SEASON CONTROL -->
                     <div class="season-control">
                         <span class="season-label">ACTIVE SEASON:</span>
-                        <!-- Input linked to datalist for typing OR selecting -->
-                        <input type="text" id="seasonInput" class="season-input" list="seasonOptions" placeholder="SELECT / NEW" onchange="window.changeSeason()">
-                        <datalist id="seasonOptions">
-                            <!-- Populated by JS from Firebase -->
-                        </datalist>
+                        <!-- Input WITHOUT list attribute, purely for new creation or manual entry -->
+                        <input type="text" id="seasonInput" class="season-input" placeholder="ENTER ID TO CREATE/LOAD" onchange="window.changeSeason()">
                         
                         <!-- Button to force reload the specific season -->
                         <button class="icon-btn" onclick="window.changeSeason()" title="Load Season">
@@ -287,6 +284,11 @@
                         <!-- Button to refresh the list of available seasons -->
                         <button class="icon-btn" onclick="window.refreshSeasonList()" title="Refresh Season List" style="margin-left:5px; opacity:0.7;">
                             <i class="fas fa-sync-alt"></i>
+                        </button>
+
+                        <!-- NEW: DELETE BUTTON -->
+                        <button class="icon-btn delete" onclick="window.deleteCurrentSeason()" title="Delete Current Season" style="margin-left:5px;">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                     <div id="seasonStatusMsg" style="font-family: var(--font-data); font-size: 0.75rem; color: var(--accent-green); font-weight:700;"></div>
@@ -455,7 +457,16 @@
     </div>
 
     <!-- MODALS -->
-    <div id="confirmModal" class="modal-overlay"><div class="modal-box"><div class="modal-title" style="color: var(--accent-red);">CONFIRM ACTION</div><p id="modalMessage" style="color: var(--text-secondary); margin-bottom: 28px;">Are you sure?</p><div style="display: flex; gap: 16px; justify-content: center;"><button id="btnConfirmYes" class="btn btn-danger">PROCEED</button><button onclick="window.closeModal()" class="btn">CANCEL</button></div></div></div>
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" style="color: var(--accent-red);">CONFIRM ACTION</div>
+            <p id="modalMessage" style="color: var(--text-secondary); margin-bottom: 28px;">Are you sure?</p>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <button id="btnConfirmYes" class="btn btn-danger">PROCEED</button>
+                <button id="btnConfirmNo" onclick="window.closeModal()" class="btn">CANCEL</button>
+            </div>
+        </div>
+    </div>
     <div id="migrationModal" class="modal-overlay"><div class="modal-box" style="border-top: 4px solid var(--accent-cyan);"><div class="modal-title" style="color: var(--accent-cyan);">DATA MIGRATION</div><p style="color: var(--text-secondary); margin-bottom: 24px;">Transfer data between seasons.</p><div style="text-align: left; margin-bottom: 16px;"><label class="input-label">SOURCE (COPY FROM)</label><input type="text" id="migrateSource" class="form-control" placeholder="e.g. season_1"></div><div style="text-align: left; margin-bottom: 24px;"><label class="input-label">TARGET (PASTE TO)</label><input type="text" id="migrateTarget" class="form-control" placeholder="e.g. season_2"></div><div style="text-align: left; margin-bottom: 28px; display: flex; align-items: center; gap: 12px;"><input type="checkbox" id="migrateDelete"><label for="migrateDelete" style="font-size: 0.85rem; color: var(--text-primary); font-weight:600;">DELETE SOURCE AFTER COPY</label></div><div style="display: flex; gap: 16px; justify-content: center;"><button onclick="window.performMigration()" class="btn btn-primary">TRANSFER</button><button onclick="document.getElementById('migrationModal').style.display='none'" class="btn">CANCEL</button></div><div id="migrationStatus" style="margin-top: 16px; color: var(--accent-cyan); font-family: var(--font-data); font-size: 0.85rem; font-weight:700;"></div></div></div>
     <div id="toast" class="toast">Notification</div>
 
@@ -596,13 +607,13 @@
 
         // --- NEW: FETCH SEASONS FROM FIREBASE ---
         window.refreshSeasonList = async () => {
-            const listEl = document.getElementById('seasonOptions');
+            // REMOVED: No longer fetching for top bar dropdown
+            // const listEl = document.getElementById('seasonOptions');
             const dashListEl = document.getElementById('dashSeasonsBody');
             const statusEl = document.getElementById('seasonStatusMsg');
             
             // Visual loading state
             if(statusEl) statusEl.innerText = "FETCHING LIST...";
-            listEl.innerHTML = ''; 
             if(dashListEl) dashListEl.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Fetching...</span>';
 
             try {
@@ -616,11 +627,6 @@
                 querySnapshot.forEach((doc) => {
                     seasonsFound.push(doc.id);
                     
-                    // Add to Top Bar Datalist
-                    const opt = document.createElement('option');
-                    opt.value = doc.id;
-                    listEl.appendChild(opt);
-
                     // Add to Dashboard Visible List
                     if(dashListEl) {
                         const sBtn = document.createElement('button');
@@ -684,13 +690,24 @@
         };
         window.showToast = showToast; // Explicitly attach to window
 
-        const customConfirm = (msg, onYes) => {
+        window.customConfirm = (msg, onYes, onNo) => {
             const m = document.getElementById('confirmModal');
             document.getElementById('modalMessage').innerText = msg;
             m.style.display = 'flex';
-            document.getElementById('btnConfirmYes').onclick = () => { m.style.display = 'none'; onYes(); };
+            
+            document.getElementById('btnConfirmYes').onclick = () => { 
+                m.style.display = 'none'; 
+                if(onYes) onYes(); 
+            };
+            
+            const btnNo = document.getElementById('btnConfirmNo');
+            if(btnNo) {
+                btnNo.onclick = () => {
+                    m.style.display = 'none';
+                    if(onNo) onNo();
+                };
+            }
         };
-        window.customConfirm = customConfirm; // Explicitly attach to window
 
         // --- CORE FUNCTIONS (Attached to Window for HTML Access) ---
         window.switchTab = (id) => {
@@ -720,34 +737,116 @@
         // --- UPDATED: CHANGE SEASON LOGIC ---
         window.changeSeason = async () => {
             let inputVal = document.getElementById("seasonInput").value.trim();
-            
             if(!inputVal) return;
             
-            // Normalize ID: lowercase and underscores instead of spaces
             inputVal = inputVal.toLowerCase().replace(/\s+/g, '_');
-            
-            // Update the input box to show the normalized ID
             document.getElementById("seasonInput").value = inputVal;
             
-            currentSeason = inputVal;
-            
-            // Visual feedback
             const statusEl = document.getElementById('seasonStatusMsg');
-            if(statusEl) {
-                statusEl.style.color = "var(--accent-cyan)";
-                statusEl.innerText = "LOADING DATA...";
+            if(statusEl) { statusEl.style.color = "var(--accent-cyan)"; statusEl.innerText = "CHECKING..."; }
+
+            const docRef = doc(db, "seasons", inputVal);
+            let snap;
+            try {
+                snap = await getDoc(docRef);
+            } catch (e) {
+                console.error(e);
+                if(statusEl) statusEl.innerText = "ERROR";
+                return;
             }
 
-            // Load Data
-            await loadTrackConfig();
-            initListener(); // Reload drivers for this season
+            if (!snap.exists()) {
+                // Use custom modal instead of native confirm
+                customConfirm(`Create new season: "${inputVal.toUpperCase()}"?`, async () => {
+                    // ON YES
+                    try {
+                        await setDoc(docRef, { trackConfig: [] });
+                        showToast(`SEASON CREATED`);
+                        await refreshSeasonList();
+                        loadSeasonData(inputVal); // Helper to load
+                    } catch(e) {
+                        console.error("Creation failed", e);
+                        showToast("Error creating season");
+                    }
+                }, () => {
+                    // ON CANCEL (Need to update customConfirm to support this or just handle UI reset)
+                    document.getElementById("seasonInput").value = currentSeason;
+                    if(statusEl) statusEl.innerText = "CANCELLED";
+                });
+                return; // Stop execution here, wait for modal
+            }
+
+            // If exists, load directly
+            loadSeasonData(inputVal);
+        };
+
+        // Refactored loading logic into a separate function to be reusable
+        async function loadSeasonData(seasonId) {
+            currentSeason = seasonId;
+            const statusEl = document.getElementById('seasonStatusMsg');
+            if(statusEl) statusEl.innerText = "LOADING...";
             
-            // Update Dashboard UI text
+            await loadTrackConfig();
+            initListener();
+            
             const dashDate = document.getElementById("dashNextDate");
             if(dashDate) dashDate.innerText = `ACTIVE: ${currentSeason.toUpperCase()}`;
 
             if(statusEl) statusEl.innerText = "READY";
             setTimeout(() => { if(statusEl) statusEl.innerText = ""; }, 1500);
+        }
+
+        // --- ADDED: DELETE SEASON FUNCTION ---
+        window.deleteCurrentSeason = async () => {
+            const seasonId = currentSeason;
+            if (!seasonId) { 
+                showToast("Invalid Season ID");
+                return;
+            }
+
+            customConfirm(`PERMANENTLY DELETE ${seasonId.toUpperCase()}?`, async () => {
+                const statusEl = document.getElementById('seasonStatusMsg');
+                if(statusEl) statusEl.innerText = "DELETING...";
+
+                try {
+                    // 1. Delete all drivers in the subcollection
+                    // Note: Client SDK requires deleting docs individually
+                    const driversRef = collection(db, "seasons", seasonId, "drivers");
+                    const snapshot = await getDocs(driversRef);
+                    const batch = writeBatch(db);
+                    snapshot.forEach((doc) => {
+                        batch.delete(doc.ref);
+                    });
+                    await batch.commit();
+
+                    // 2. Delete the season document itself
+                    await deleteDoc(doc(db, "seasons", seasonId));
+
+                    showToast(`${seasonId.toUpperCase()} DELETED`);
+                    
+                    // 3. Reset UI
+                    document.getElementById("seasonInput").value = "";
+                    currentSeason = "";
+                    
+                    // 4. Refresh list
+                    await refreshSeasonList();
+                    
+                    // 5. Fallback to first available season or default
+                    const firstSeason = knownSeasons[0];
+                    if(firstSeason) {
+                        document.getElementById("seasonInput").value = firstSeason;
+                        changeSeason();
+                    } else {
+                        document.getElementById("seasonInput").value = "season_1"; 
+                        changeSeason();
+                    }
+
+                } catch (e) {
+                    console.error(e);
+                    showToast("Error Deleting Season");
+                    if(statusEl) statusEl.innerText = "";
+                }
+            });
         };
 
         async function loadTrackConfig() {
