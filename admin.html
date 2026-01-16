@@ -216,6 +216,41 @@
         .rg_scrollbar::-webkit-scrollbar-track { background: #1f2937; }
         .rg_scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
         .rg_scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        /* ANALYTICS SPECIFIC STYLES */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 100px 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .comp-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-dim);
+        }
+        .vs-badge {
+            background: var(--text-primary);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin: 0 auto;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-dim);
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -364,8 +399,47 @@
                     <div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr;"><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-cyan);"><i class="fas fa-trophy"></i> DRIVERS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>DRIVER</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveDriversBody"></tbody></table></div></div><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-red);"><i class="fas fa-wrench"></i> CONSTRUCTORS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveConstructorsBody"></tbody></table></div></div></div>
                 </div>
 
+                <!-- UPDATED ANALYTICS SECTION -->
                 <div id="driver-stats" class="section">
-                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-chart-line"></i> PERFORMANCE ANALYTICS</div></div><div class="panel-body"><div style="max-width: 400px; margin-bottom: 30px;"><select id="statsDriverSelect" class="form-control" onchange="window.viewDriverStats()"></select></div><div id="statsDisplay" style="display:none;"><div style="display:flex; justify-content:space-between; align-items: flex-end; margin-bottom: 32px;"><div><h1 id="statsDriverName" style="font-family: var(--font-display); font-size: 2.5rem; margin:0; font-weight:800; color:var(--text-primary);">NAME</h1><div id="statsTeamName" style="color: var(--accent-cyan); font-family: var(--font-data); font-weight:600;">TEAM</div></div><div class="stat-value" id="statPoints" style="color: var(--accent-yellow);">0 <span style="font-size: 1.2rem; color: var(--text-secondary);">PTS</span></div></div><div class="dashboard-grid-full" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;"><div class="stat-card" style="padding: 16px;"><div class="stat-label">WINS</div><div class="stat-value" id="statWins">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">PODIUMS</div><div class="stat-value" id="statPodiums">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">AVG FINISH</div><div class="stat-value" id="statAvg">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">CONSISTENCY</div><div class="stat-value" id="statConsistency">0</div></div></div><div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr; margin-bottom: 32px;"><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">CUMULATIVE POINTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="pointsChart"></canvas></div></div></div><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">RACE RESULTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="barChart"></canvas></div></div></div></div><div class="panel-title" style="margin-bottom:15px;">SEASON HISTORY</div><table class="tech-table"><thead><tr><th>TRACK</th><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="statsHistoryBody"></tbody></table></div></div></div>
+                    <div class="panel">
+                        <div class="panel-header"><div class="panel-title"><i class="fas fa-chart-line"></i> PERFORMANCE ANALYTICS</div></div>
+                        <div class="panel-body">
+                            <!-- Controls -->
+                            <div style="display:flex; gap:15px; margin-bottom: 25px; flex-wrap:wrap;">
+                                <select id="statsMode" class="form-control" style="width:auto; font-weight:bold;" onchange="window.toggleStatsMode()">
+                                    <option value="individual">INDIVIDUAL ANALYSIS</option>
+                                    <option value="1v1">DRIVER HEAD-TO-HEAD</option>
+                                    <option value="team">TEAM BATTLE</option>
+                                </select>
+                                
+                                <div id="sel-individual" class="stats-selector">
+                                    <select id="statsDriverSelect" class="form-control" onchange="window.renderStats()"></select>
+                                </div>
+                                
+                                <div id="sel-1v1" class="stats-selector" style="display:none; gap:10px;">
+                                    <select id="statsDriverA" class="form-control" onchange="window.renderStats()"></select>
+                                    <span style="align-self:center; font-weight:800; color:var(--text-muted);">VS</span>
+                                    <select id="statsDriverB" class="form-control" onchange="window.renderStats()"></select>
+                                </div>
+
+                                <div id="sel-team" class="stats-selector" style="display:none; gap:10px;">
+                                    <select id="statsTeamA" class="form-control" onchange="window.renderStats()"></select>
+                                    <span style="align-self:center; font-weight:800; color:var(--text-muted);">VS</span>
+                                    <select id="statsTeamB" class="form-control" onchange="window.renderStats()"></select>
+                                </div>
+                            </div>
+
+                            <!-- Content Area -->
+                            <div id="statsContent">
+                                <!-- Default Content (Individual) - Hidden by default, populated by JS -->
+                                <div id="statsDisplay" style="display:none;">
+                                    <div style="display:flex; justify-content:space-between; align-items: flex-end; margin-bottom: 32px;"><div><h1 id="statsDriverName" style="font-family: var(--font-display); font-size: 2.5rem; margin:0; font-weight:800; color:var(--text-primary);">NAME</h1><div id="statsTeamName" style="color: var(--accent-cyan); font-family: var(--font-data); font-weight:600;">TEAM</div></div><div class="stat-value" id="statPoints" style="color: var(--accent-yellow);">0 <span style="font-size: 1.2rem; color: var(--text-secondary);">PTS</span></div></div><div class="dashboard-grid-full" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;"><div class="stat-card" style="padding: 16px;"><div class="stat-label">WINS</div><div class="stat-value" id="statWins">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">PODIUMS</div><div class="stat-value" id="statPodiums">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">AVG FINISH</div><div class="stat-value" id="statAvg">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">CONSISTENCY</div><div class="stat-value" id="statConsistency">0</div></div></div><div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr; margin-bottom: 32px;"><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">CUMULATIVE POINTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="pointsChart"></canvas></div></div></div><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">RACE RESULTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="barChart"></canvas></div></div></div></div><div class="panel-title" style="margin-bottom:15px;">SEASON HISTORY</div><table class="tech-table"><thead><tr><th>TRACK</th><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="statsHistoryBody"></tbody></table>
+                                </div>
+                                <!-- Comparison Content Container -->
+                                <div id="comparisonDisplay" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="import-preview" class="section">
@@ -414,7 +488,8 @@
                                                 <span class="tw-col-span-1">Fast</span>
                                                 <span class="tw-col-span-1">Pts</span>
                                             </div>
-                                            <div id="rg_race-inputs" class="tw-space-y-1 tw-max-h-[300px] tw-overflow-y-auto tw-pr-1 rg_scrollbar"></div>
+                                            <!-- REMOVED SCROLLBAR AND HEIGHT LIMIT -->
+                                            <div id="rg_race-inputs" class="tw-space-y-1 tw-pr-1"></div>
                                         </div>
                                         <div class="tw-flex tw-flex-col tw-gap-3 tw-pt-2 tw-border-t tw-border-gray-700">
                                             <div class="tw-flex tw-gap-2">
@@ -732,6 +807,12 @@
             const teamOptions = TEAMS.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
             document.getElementById("newDriverTeam").innerHTML = teamOptions;
             document.getElementById("editorMainTeam").innerHTML = teamOptions;
+            
+            // Populate Team Selectors for Analytics
+            const teamSelA = document.getElementById("statsTeamA");
+            const teamSelB = document.getElementById("statsTeamB");
+            if(teamSelA) teamSelA.innerHTML = '<option value="">Select Team A</option>' + teamOptions;
+            if(teamSelB) teamSelB.innerHTML = '<option value="">Select Team B</option>' + teamOptions;
         }
 
         // --- UPDATED: CHANGE SEASON LOGIC ---
@@ -1277,11 +1358,58 @@
             }
         };
 
+        // --- UPDATED ANALYTICS FUNCTIONS ---
+        window.toggleStatsMode = () => {
+            const mode = document.getElementById('statsMode').value;
+            // Hide all selectors
+            document.querySelectorAll('.stats-selector').forEach(el => el.style.display = 'none');
+            // Show active selector
+            if(mode === 'individual') document.getElementById('sel-individual').style.display = 'block';
+            else if(mode === '1v1') document.getElementById('sel-1v1').style.display = 'flex';
+            else if(mode === 'team') document.getElementById('sel-team').style.display = 'flex';
+            
+            // Clear content
+            document.getElementById('statsDisplay').style.display = 'none';
+            document.getElementById('comparisonDisplay').style.display = 'none';
+            document.getElementById('statsContent').innerHTML = document.getElementById('statsDisplay').outerHTML + 
+                '<div id="comparisonDisplay" style="display:none;"></div>' + 
+                '<div id="emptyStats" style="text-align:center; color:var(--text-muted); padding:40px;">SELECT DATA TO ANALYZE</div>';
+        };
+
+        window.renderStats = () => {
+            const mode = document.getElementById('statsMode').value;
+            // FIXED: Check if element exists before accessing style
+            const es = document.getElementById('emptyStats');
+            if(es) { es.style.display = 'none'; }
+            
+            if(mode === 'individual') {
+                window.viewDriverStats();
+            } else if(mode === '1v1') {
+                render1v1();
+            } else if(mode === 'team') {
+                renderTeamBattle();
+            }
+        };
+
+        // --- Existing Individual Logic ---
         window.viewDriverStats = () => {
-            const id = document.getElementById("statsDriverSelect").value; const disp = document.getElementById("statsDisplay"); if(!id) { disp.style.display="none"; return; } disp.style.display="block";
-            const d = driversCache[id]; document.getElementById("statsDriverName").innerText = d.name.toUpperCase(); document.getElementById("statsTeamName").innerText = TEAMS.find(t=>t.id===d.team)?.name.toUpperCase() || d.team; document.getElementById("statPoints").innerHTML = `${d.totalPoints} <span style="font-size:1rem; color:var(--text-secondary);">PTS</span>`;
-            let w=0, p=0, r=0, entries=0, best=0, dnf=0, hHTML=""; const labels = [], dataPoints = [], barData = []; let cumulative = 0;
+            const id = document.getElementById("statsDriverSelect").value; 
+            const disp = document.getElementById("statsDisplay"); 
+            if(!id) return; 
+            disp.style.display="block";
+            document.getElementById("comparisonDisplay").style.display="none";
+
+            const d = driversCache[id]; 
+            document.getElementById("statsDriverName").innerText = d.name.toUpperCase(); 
+            document.getElementById("statsTeamName").innerText = TEAMS.find(t=>t.id===d.team)?.name.toUpperCase() || d.team; 
+            document.getElementById("statPoints").innerHTML = `${d.totalPoints} <span style="font-size:1rem; color:var(--text-secondary);">PTS</span>`;
+            
+            let w=0, p=0, r=0, entries=0, best=0, hHTML=""; 
+            const labels = [], dataPoints = [], barData = []; 
+            let cumulative = 0;
             let totalPos = 0, finishedRaces = 0;
+            let variance = 0;
+
             activeTracks.forEach(t => { 
                 const res = d.results ? d.results[t.id] : null; 
                 const pt = (res && typeof res === 'object') ? res.points : (res || 0); 
@@ -1295,10 +1423,207 @@
                     labels.push(t.id.substring(0,3).toUpperCase()); dataPoints.push(cumulative); barData.push(pt); 
                 } 
             });
-            let avg = finishedRaces > 0 ? totalPos / finishedRaces : 0; let variance = 0; if(r > 0) { barData.forEach(pt => { if(pt>0) variance += Math.pow(pt - (d.totalPoints/r), 2); }); variance = Math.sqrt(variance / r).toFixed(1); }
-            document.getElementById("statWins").innerText = w; document.getElementById("statPodiums").innerText = p; document.getElementById("statAvg").innerText = avg > 0 ? "P" + avg.toFixed(1) : "-"; document.getElementById("statConsistency").innerText = variance; document.getElementById("statsHistoryBody").innerHTML = hHTML || `<tr><td colspan="4" style="text-align:center;">NO DATA</td></tr>`;
+            
+            let avg = finishedRaces > 0 ? totalPos / finishedRaces : 0; 
+            if(r > 0) { 
+                barData.forEach(pt => { if(pt>0) variance += Math.pow(pt - (d.totalPoints/r), 2); }); 
+                variance = Math.sqrt(variance / r).toFixed(1); 
+            }
+            
+            document.getElementById("statWins").innerText = w; 
+            document.getElementById("statPodiums").innerText = p; 
+            document.getElementById("statAvg").innerText = avg > 0 ? "P" + avg.toFixed(1) : "-"; 
+            document.getElementById("statConsistency").innerText = variance; 
+            document.getElementById("statsHistoryBody").innerHTML = hHTML || `<tr><td colspan="4" style="text-align:center;">NO DATA</td></tr>`;
+            
             renderChart(labels, dataPoints, barData);
         };
+
+        // --- NEW: 1v1 Comparison ---
+        function render1v1() {
+            const idA = document.getElementById('statsDriverA').value;
+            const idB = document.getElementById('statsDriverB').value;
+            const container = document.getElementById('comparisonDisplay');
+            if(!idA || !idB) return;
+
+            container.style.display = 'block';
+            document.getElementById('statsDisplay').style.display = 'none';
+
+            const dA = driversCache[idA];
+            const dB = driversCache[idB];
+
+            let ptsA = 0, ptsB = 0;
+            let winsA = 0, winsB = 0;
+            let bestA = 99, bestB = 99;
+            const labels = [];
+            const dataA = [];
+            const dataB = [];
+            let cumA = 0, cumB = 0;
+
+            activeTracks.forEach(t => {
+                const rA = dA.results?.[t.id];
+                const rB = dB.results?.[t.id];
+                
+                const pA = (rA && typeof rA === 'object') ? rA.points : (rA || 0);
+                const pB = (rB && typeof rB === 'object') ? rB.points : (rB || 0);
+                
+                // Track stats
+                ptsA += pA; ptsB += pB;
+                cumA += pA; cumB += pB;
+                
+                if(pA >= 25) winsA++;
+                if(pB >= 25) winsB++;
+
+                const posA = (rA && rA.position) ? parseInt(rA.position) : 99;
+                const posB = (rB && rB.position) ? parseInt(rB.position) : 99;
+                if(posA < bestA) bestA = posA;
+                if(posB < bestB) bestB = posB;
+
+                if(rA || rB) { // Only chart if at least one raced
+                    labels.push(t.id.substring(0,3).toUpperCase());
+                    dataA.push(cumA);
+                    dataB.push(cumB);
+                }
+            });
+
+            container.innerHTML = `
+                <div class="comparison-grid">
+                    <div class="comp-card">
+                        <h3>${dA.name}</h3>
+                        <h1 style="color:var(--accent-cyan); font-size:2.5rem;">${ptsA}</h1>
+                        <p>POINTS</p>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="comp-card">
+                        <h3>${dB.name}</h3>
+                        <h1 style="color:var(--accent-red); font-size:2.5rem;">${ptsB}</h1>
+                        <p>POINTS</p>
+                    </div>
+                </div>
+                
+                <div style="background:#fff; padding:20px; border-radius:12px; margin-bottom:20px;">
+                    <div class="stat-row"><span>WINS</span> <span>${winsA} vs ${winsB}</span></div>
+                    <div class="stat-row"><span>BEST FINISH</span> <span>P${bestA===99?'-':bestA} vs P${bestB===99?'-':bestB}</span></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><div class="panel-title">SEASON BATTLE</div></div>
+                    <div class="panel-body">
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="compChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Draw Chart
+            const ctx = document.getElementById('compChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: dA.name, data: dataA, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.1)', fill:true },
+                        { label: dB.name, data: dataB, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill:true }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // --- NEW: Team Battle ---
+        function renderTeamBattle() {
+            const tA = document.getElementById('statsTeamA').value;
+            const tB = document.getElementById('statsTeamB').value;
+            const container = document.getElementById('comparisonDisplay');
+            if(!tA || !tB) return;
+
+            container.style.display = 'block';
+            document.getElementById('statsDisplay').style.display = 'none';
+
+            // Aggregate Data
+            let ptsA = 0, ptsB = 0;
+            let winsA = 0, winsB = 0;
+            const labels = [];
+            const dataA = [];
+            const dataB = [];
+            let cumA = 0, cumB = 0;
+
+            activeTracks.forEach(t => {
+                let trackPtsA = 0;
+                let trackPtsB = 0;
+
+                allDrivers.forEach(d => {
+                    const r = d.results?.[t.id];
+                    if(!r) return;
+                    const p = (typeof r === 'object') ? r.points : r;
+                    // Check team override in result, else fallback to driver team
+                    const raceTeam = (typeof r === 'object' && r.team) ? r.team : d.team;
+                    
+                    if(raceTeam === tA) {
+                        trackPtsA += p;
+                        if(p >= 25) winsA++;
+                    } else if(raceTeam === tB) {
+                        trackPtsB += p;
+                        if(p >= 25) winsB++;
+                    }
+                });
+
+                cumA += trackPtsA;
+                cumB += trackPtsB;
+                
+                if(trackPtsA > 0 || trackPtsB > 0) {
+                    labels.push(t.id.substring(0,3).toUpperCase());
+                    dataA.push(cumA);
+                    dataB.push(cumB);
+                }
+            });
+
+            const teamNameA = TEAMS.find(x => x.id === tA)?.name || tA;
+            const teamNameB = TEAMS.find(x => x.id === tB)?.name || tB;
+
+            container.innerHTML = `
+                <div class="comparison-grid">
+                    <div class="comp-card" style="border-top:4px solid ${getTeamColor(tA)}">
+                        <h3>${teamNameA}</h3>
+                        <h1 style="color:var(--text-primary); font-size:2.5rem;">${cumA}</h1>
+                        <p>POINTS</p>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="comp-card" style="border-top:4px solid ${getTeamColor(tB)}">
+                        <h3>${teamNameB}</h3>
+                        <h1 style="color:var(--text-primary); font-size:2.5rem;">${cumB}</h1>
+                        <p>POINTS</p>
+                    </div>
+                </div>
+                
+                <div style="background:#fff; padding:20px; border-radius:12px; margin-bottom:20px;">
+                    <div class="stat-row"><span>RACE WINS</span> <span>${winsA} vs ${winsB}</span></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><div class="panel-title">CONSTRUCTORS BATTLE</div></div>
+                    <div class="panel-body">
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="teamChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const ctx = document.getElementById('teamChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: teamNameA, data: dataA, borderColor: getTeamColor(tA), backgroundColor: 'transparent', borderWidth:3 },
+                        { label: teamNameB, data: dataB, borderColor: getTeamColor(tB), backgroundColor: 'transparent', borderWidth:3 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
 
         // --- VISUALIZATION HELPERS ---
         function updateLiveTables() {
@@ -1324,10 +1649,16 @@
             unsubscribe = onSnapshot(q, (snap) => {
                 const list = document.getElementById("driverList");
                 const statSel = document.getElementById("statsDriverSelect");
+                const statSelA = document.getElementById("statsDriverA");
+                const statSelB = document.getElementById("statsDriverB");
                 const grid = document.getElementById("editorSelectionGrid");
+                
                 if(list) list.innerHTML = ""; 
                 if(statSel) statSel.innerHTML = '<option value="">-- SELECT DRIVER --</option>'; 
+                if(statSelA) statSelA.innerHTML = '<option value="">Select Driver A</option>'; 
+                if(statSelB) statSelB.innerHTML = '<option value="">Select Driver B</option>'; 
                 if(grid) grid.innerHTML = ""; 
+                
                 allDrivers = [];
                 snap.forEach(d => { const data = d.data(); data.id = d.id; driversCache[d.id] = data; allDrivers.push(data); });
                 allDrivers.sort((a, b) => {
@@ -1336,10 +1667,16 @@
                     if (idxA !== -1 && idxB !== -1 && idxA !== idxB) return idxA - idxB;
                     return a.name.localeCompare(b.name);
                 });
+                
                 allDrivers.forEach(data => {
                     const teamColor = TEAM_COLORS[data.team] || '#94a3b8';
                     const teamName = TEAMS.find(t => t.id === data.team)?.name || data.team;
-                    if(statSel) statSel.innerHTML += `<option value="${data.id}">${data.name.toUpperCase()}</option>`;
+                    const opt = `<option value="${data.id}">${data.name.toUpperCase()}</option>`;
+                    
+                    if(statSel) statSel.innerHTML += opt;
+                    if(statSelA) statSelA.innerHTML += opt;
+                    if(statSelB) statSelB.innerHTML += opt;
+
                     if(list) list.innerHTML += `<div class="driver-card" style="--team-color:${teamColor}"><div style="display:flex; align-items:center; gap:12px; position:relative; z-index:2;"><input type="checkbox" class="driver-checkbox" value="${data.id}" style="transform:scale(1.2);"><div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div></div><button class="icon-btn delete" onclick="window.deleteDriver('${data.id}')"><i class="fas fa-trash"></i></button></div>`;
                     if(grid) grid.innerHTML += `<div class="driver-card" style="--team-color:${teamColor}; cursor:pointer;" onclick="loadDriverData('${data.id}')"><div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div><div style="position:relative; z-index:2; font-family:var(--font-display); font-size:1.2rem; color:var(--accent-cyan); font-weight:800;">${data.totalPoints} PTS</div></div>`;
                 });
@@ -1348,6 +1685,10 @@
                 if(currentEditId && document.getElementById("editor-area") && document.getElementById("editor-area").style.display === "block" && driversCache[currentEditId]) loadDriverData(currentEditId);
                 updateDashboard();
                 updateLiveTables();
+                
+                // Refresh analytics if in view
+                const mode = document.getElementById('statsMode') ? document.getElementById('statsMode').value : 'individual';
+                if(mode !== 'individual') renderStats(); 
             });
         }
 
