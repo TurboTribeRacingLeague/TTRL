@@ -358,11 +358,41 @@
                         <div class="stat-card card-accent-purple"><i class="fas fa-trophy stat-icon" style="color: var(--accent-purple); opacity: 0.1;"></i><div class="stat-label">LEADER</div><div class="stat-value" id="dashLeader" style="font-size:1.5rem;">--</div><div class="stat-footer highlight" id="dashLeaderPts" style="color:var(--accent-purple);">0 PTS</div></div>
                         <div class="stat-card card-accent-red"><i class="fas fa-cogs stat-icon" style="color: var(--accent-red); opacity: 0.1;"></i><div class="stat-label">TOP TEAM</div><div class="stat-value" id="dashTeamLeader" style="font-size:1.5rem;">--</div><div class="stat-footer highlight" style="color: var(--accent-red);" id="dashTeamPts">0 PTS</div></div>
                     </div>
+                    
+                    <!-- UPDATED DASHBOARD CARDS ROW -->
                     <div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr 1fr;">
-                        <div class="stat-card" style="background:#fff; border-left: 4px solid var(--accent-yellow);"><div style="display:flex; align-items:center; gap:15px;"><div style="font-size:2.5rem; color:var(--accent-yellow);"><i class="fas fa-stopwatch"></i></div><div><div class="stat-label" style="margin:0;">FASTEST LAP</div><div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">N/A</div></div></div></div>
-                        <div class="stat-card" style="background:#fff; border-left: 4px solid var(--accent-cyan);"><div style="display:flex; align-items:center; gap:15px;"><div style="font-size:2.5rem; color:var(--accent-cyan);"><i class="fas fa-cloud-sun"></i></div><div><div class="stat-label" style="margin:0;">CONDITIONS</div><div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">DRY</div></div></div></div>
-                        <div class="stat-card" style="background:#fff; border-left: 4px solid var(--accent-green);"><div style="display:flex; align-items:center; gap:15px;"><div style="font-size:2.5rem; color:var(--accent-green);"><i class="fas fa-flag-checkered"></i></div><div><div class="stat-label" style="margin:0;">STATUS</div><div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">GREEN</div></div></div></div>
+                        <div class="stat-card" style="background:#fff; border-left: 4px solid var(--accent-yellow);">
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div style="font-size:2.5rem; color:var(--accent-yellow);"><i class="fas fa-trophy"></i></div>
+                                <div>
+                                    <div class="stat-label" style="margin:0;">MOST WINS</div>
+                                    <div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);" id="dashMostWins">--</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;" id="dashMostWinsCount">0 WINS</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="background:#fff; border-left: 4px solid var(--accent-cyan);">
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div style="font-size:2.5rem; color:var(--accent-cyan);"><i class="fas fa-road"></i></div>
+                                <div>
+                                    <div class="stat-label" style="margin:0;">DRIVER GAP</div>
+                                    <div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);" id="dashDriverGap">0</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">POINTS (P1-P2)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="background:#fff; border-left: 4px solid var(--accent-red);">
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div style="font-size:2.5rem; color:var(--accent-red);"><i class="fas fa-people-group"></i></div>
+                                <div>
+                                    <div class="stat-label" style="margin:0;">TEAM GAP</div>
+                                    <div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);" id="dashTeamGap">0</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">POINTS (P1-P2)</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="dashboard-grid-full" style="grid-template-columns: 2fr 1fr;">
                         <div class="panel">
                             <div class="panel-header"><div class="panel-title"><i class="fas fa-chart-line"></i> SEASON PROGRESS</div></div>
@@ -399,47 +429,8 @@
                     <div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr;"><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-cyan);"><i class="fas fa-trophy"></i> DRIVERS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>DRIVER</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveDriversBody"></tbody></table></div></div><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-red);"><i class="fas fa-wrench"></i> CONSTRUCTORS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveConstructorsBody"></tbody></table></div></div></div>
                 </div>
 
-                <!-- UPDATED ANALYTICS SECTION -->
                 <div id="driver-stats" class="section">
-                    <div class="panel">
-                        <div class="panel-header"><div class="panel-title"><i class="fas fa-chart-line"></i> PERFORMANCE ANALYTICS</div></div>
-                        <div class="panel-body">
-                            <!-- Controls -->
-                            <div style="display:flex; gap:15px; margin-bottom: 25px; flex-wrap:wrap;">
-                                <select id="statsMode" class="form-control" style="width:auto; font-weight:bold;" onchange="window.toggleStatsMode()">
-                                    <option value="individual">INDIVIDUAL ANALYSIS</option>
-                                    <option value="1v1">DRIVER HEAD-TO-HEAD</option>
-                                    <option value="team">TEAM BATTLE</option>
-                                </select>
-                                
-                                <div id="sel-individual" class="stats-selector">
-                                    <select id="statsDriverSelect" class="form-control" onchange="window.renderStats()"></select>
-                                </div>
-                                
-                                <div id="sel-1v1" class="stats-selector" style="display:none; gap:10px;">
-                                    <select id="statsDriverA" class="form-control" onchange="window.renderStats()"></select>
-                                    <span style="align-self:center; font-weight:800; color:var(--text-muted);">VS</span>
-                                    <select id="statsDriverB" class="form-control" onchange="window.renderStats()"></select>
-                                </div>
-
-                                <div id="sel-team" class="stats-selector" style="display:none; gap:10px;">
-                                    <select id="statsTeamA" class="form-control" onchange="window.renderStats()"></select>
-                                    <span style="align-self:center; font-weight:800; color:var(--text-muted);">VS</span>
-                                    <select id="statsTeamB" class="form-control" onchange="window.renderStats()"></select>
-                                </div>
-                            </div>
-
-                            <!-- Content Area -->
-                            <div id="statsContent">
-                                <!-- Default Content (Individual) - Hidden by default, populated by JS -->
-                                <div id="statsDisplay" style="display:none;">
-                                    <div style="display:flex; justify-content:space-between; align-items: flex-end; margin-bottom: 32px;"><div><h1 id="statsDriverName" style="font-family: var(--font-display); font-size: 2.5rem; margin:0; font-weight:800; color:var(--text-primary);">NAME</h1><div id="statsTeamName" style="color: var(--accent-cyan); font-family: var(--font-data); font-weight:600;">TEAM</div></div><div class="stat-value" id="statPoints" style="color: var(--accent-yellow);">0 <span style="font-size: 1.2rem; color: var(--text-secondary);">PTS</span></div></div><div class="dashboard-grid-full" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;"><div class="stat-card" style="padding: 16px;"><div class="stat-label">WINS</div><div class="stat-value" id="statWins">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">PODIUMS</div><div class="stat-value" id="statPodiums">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">AVG FINISH</div><div class="stat-value" id="statAvg">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">CONSISTENCY</div><div class="stat-value" id="statConsistency">0</div></div></div><div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr; margin-bottom: 32px;"><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">CUMULATIVE POINTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="pointsChart"></canvas></div></div></div><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">RACE RESULTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="barChart"></canvas></div></div></div></div><div class="panel-title" style="margin-bottom:15px;">SEASON HISTORY</div><table class="tech-table"><thead><tr><th>TRACK</th><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="statsHistoryBody"></tbody></table>
-                                </div>
-                                <!-- Comparison Content Container -->
-                                <div id="comparisonDisplay" style="display:none;"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-chart-line"></i> PERFORMANCE ANALYTICS</div></div><div class="panel-body"><div style="max-width: 400px; margin-bottom: 30px;"><select id="statsDriverSelect" class="form-control" onchange="window.viewDriverStats()"></select></div><div id="statsDisplay" style="display:none;"><div style="display:flex; justify-content:space-between; align-items: flex-end; margin-bottom: 32px;"><div><h1 id="statsDriverName" style="font-family: var(--font-display); font-size: 2.5rem; margin:0; font-weight:800; color:var(--text-primary);">NAME</h1><div id="statsTeamName" style="color: var(--accent-cyan); font-family: var(--font-data); font-weight:600;">TEAM</div></div><div class="stat-value" id="statPoints" style="color: var(--accent-yellow);">0 <span style="font-size: 1.2rem; color: var(--text-secondary);">PTS</span></div></div><div class="dashboard-grid-full" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;"><div class="stat-card" style="padding: 16px;"><div class="stat-label">WINS</div><div class="stat-value" id="statWins">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">PODIUMS</div><div class="stat-value" id="statPodiums">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">AVG FINISH</div><div class="stat-value" id="statAvg">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">CONSISTENCY</div><div class="stat-value" id="statConsistency">0</div></div></div><div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr; margin-bottom: 32px;"><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">CUMULATIVE POINTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="pointsChart"></canvas></div></div></div><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">RACE RESULTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="barChart"></canvas></div></div></div></div><div class="panel-title" style="margin-bottom:15px;">SEASON HISTORY</div><table class="tech-table"><thead><tr><th>TRACK</th><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="statsHistoryBody"></tbody></table></div></div></div>
                 </div>
 
                 <div id="import-preview" class="section">
@@ -1046,6 +1037,28 @@
             }
             safeSet('dashLastWinner', lastWinnerName.toUpperCase());
             safeSet('dashLastGP', lastWinnerGP);
+
+            // --- UPDATED STATS CALCULATIONS ---
+            
+            // 1. Driver Gap
+            let driverGap = 0;
+            if(allDrivers.length >= 2) {
+                const sortedDrivers = [...allDrivers].sort((a,b) => b.totalPoints - a.totalPoints);
+                driverGap = sortedDrivers[0].totalPoints - sortedDrivers[1].totalPoints;
+            }
+            safeSet('dashDriverGap', driverGap);
+
+            // 2. Team Gap
+            const teamRank = Object.keys(teamPoints).map(tid => ({id: tid, pts: teamPoints[tid]})).sort((a,b) => b.pts - a.pts);
+            let teamGap = 0;
+            if(teamRank.length >= 2) {
+                teamGap = teamRank[0].pts - teamRank[1].pts;
+            }
+            safeSet('dashTeamGap', teamGap);
+            
+            // 3. Most Wins
+            safeSet('dashMostWins', mostWins.name.toUpperCase());
+            safeSet('dashMostWinsCount', `${mostWins.count} WINS`);
         }
 
         // --- DASHBOARD ACTIONS ---
