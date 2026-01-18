@@ -143,6 +143,10 @@
         .icon-btn { position: relative; z-index: 10; background: #fff; border: 1px solid var(--border-dim); color: var(--text-muted); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.2s; }
         .icon-btn:hover { background: #f1f5f9; color: var(--text-primary); border-color: var(--accent-cyan); }
         .icon-btn.delete:hover { background: #fef2f2; border-color: #fecaca; color: var(--accent-red); }
+        
+        /* ADDED: Admin Panel Team Logo Style */
+        .admin-team-logo { width: 32px; height: 32px; object-fit: contain; margin-right: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+
         .team-strip { width: 8px; height: 100%; position: absolute; left: 0; top: 0; background: var(--team-color, #ccc); }
         .tech-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: var(--font-ui); font-size: 0.9rem; }
         .tech-table th { text-align: left; padding: 16px 20px; color: var(--text-secondary); font-family: var(--font-ui); font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--border-dim); font-weight: 800; letter-spacing: 0.5px; background: #f8fafc; }
@@ -410,23 +414,76 @@
                 </div>
 
                 <div id="season-setup" class="section">
-                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-calendar-days"></i> CALENDAR EDITOR</div><div class="action-cluster"><button class="btn" onclick="window.toggleTrackSelectAll()">SELECT ALL</button><button class="btn btn-danger" onclick="window.deleteSelectedTracks()">DELETE</button></div></div><div class="panel-body"><div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 20px; margin-bottom: 25px; align-items: end;"><div><label class="input-label">SELECT CIRCUIT</label><select id="trackSelector" class="form-control"><option>LOADING...</option></select></div><div><label class="input-label">RACE DATE</label><input type="date" id="newTrackDate" class="form-control"></div><button class="btn btn-primary" onclick="window.addTrackConfig()" style="height: 46px;"><i class="fas fa-plus"></i></button></div><div id="trackConfigList" style="max-height: 500px; overflow-y: auto;"></div></div></div>
+                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-calendar-days"></i> CALENDAR EDITOR</div><div class="action-cluster"><button class="btn" onclick="window.toggleTrackSelectAll()">SELECT ALL</button><button class="btn btn-danger" onclick="window.deleteSelectedTracks()">DELETE</button></div></div><div class="panel-body"><div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 20px; margin-bottom: 25px; align-items: end;"><div><label class="input-label">SELECT CIRCUIT</label><select id="trackSelector" class="form-control"><option>LOADING...</option></select></div><div><label class="input-label">RACE DATE</label><input type="date" id="newTrackDate" class="form-control"></div><button class="btn btn-primary" onclick="window.addTrackConfig()" style="height: 46px;"><i class="fas fa-plus"></i></button></div><div id="trackConfigList"></div></div></div>
                 </div>
 
                 <div id="manage-drivers" class="section">
-                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-user-plus"></i> DRIVER ONBOARDING</div><div class="action-cluster"><button class="btn" onclick="window.toggleSelectAll()">SELECT ALL</button><button class="btn btn-danger" onclick="window.deleteSelectedDrivers()">DELETE SELECTED</button></div></div><div class="panel-body"><div style="margin-bottom:24px; display:flex; gap:12px;"><input type="text" id="newDriverName" class="form-control" placeholder="DRIVER NAME"><select id="newDriverTeam" class="form-control"></select><button class="btn btn-primary" onclick="window.registerDriver()">ADD</button></div><div id="driverList" class="data-grid"></div></div></div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fas fa-user-plus"></i> DRIVER ONBOARDING</div>
+                            <div class="action-cluster">
+                                <button class="btn" onclick="window.toggleSelectAll()">SELECT ALL</button>
+                                <button class="btn btn-danger" onclick="window.deleteSelectedDrivers()">DELETE SELECTED</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div style="margin-bottom:24px; display:flex; gap:12px;">
+                                <input type="text" id="newDriverName" class="form-control" placeholder="DRIVER NAME">
+                                <select id="newDriverTeam" class="form-control"></select>
+                                <button class="btn btn-primary" onclick="window.registerDriver()">ADD</button>
+                            </div>
+                            
+                            <h3 class="panel-title" style="margin: 20px 0 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 10px;">THE GRID</h3>
+                            <div id="driverListFull" class="data-grid"></div>
+                            
+                            <h3 class="panel-title" style="margin: 30px 0 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 10px; color: var(--text-secondary);">RESERVE POOL</h3>
+                            <div id="driverListReserve" class="data-grid"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="driver-editor" class="section">
-                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-user-pen"></i> INDIVIDUAL ADJUSTMENT</div></div><div class="panel-body"><div id="editorSelectionGrid" class="data-grid"></div><div id="editor-area" style="display:none;"><div style="display:flex; align-items:center; gap: 20px; margin-bottom: 30px;"><button class="btn" onclick="window.closeDriverEditor()"><i class="fas fa-arrow-left"></i> BACK</button><div class="input-group" style="margin:0; flex:1; display:flex; gap:10px;"><input type="text" id="editorDriverNameInput" class="form-control" style="font-size:1.5rem; font-weight:800; color:var(--text-primary); height:auto; padding:5px 10px;"><button class="btn btn-primary" onclick="window.updateDriverName()">RENAME</button></div></div><div style="max-width: 400px; margin-bottom: 30px;"><label class="input-label">MAIN TEAM CONTRACT</label><select id="editorMainTeam" class="form-control" onchange="window.updateMainTeam()"></select><input type="hidden" id="editorDriverIdHidden"></div><div id="trackGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div><div style="margin-top: 32px; padding: 24px; background: #f8fafc; border: 1px solid var(--border-dim); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;"><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">TOTAL: <span id="calculatedTotal" style="color: var(--accent-cyan);">0</span> PTS</div><button class="btn btn-primary" onclick="window.saveAllChanges()">SAVE CHANGES</button></div></div></div></div>
+                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-user-pen"></i> INDIVIDUAL ADJUSTMENT</div></div><div class="panel-body">
+                        <div id="editorSelectionContainer">
+                            <h3 class="panel-title" style="margin: 0 0 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 10px;">THE GRID</h3>
+                            <div id="editorGridFull" class="data-grid"></div>
+                            
+                            <h3 class="panel-title" style="margin: 30px 0 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 10px; color: var(--text-secondary);">RESERVE POOL</h3>
+                            <div id="editorGridReserve" class="data-grid"></div>
+                        </div>
+                        <div id="editor-area" style="display:none;"><div style="display:flex; align-items:center; gap: 20px; margin-bottom: 30px;"><button class="btn" onclick="window.closeDriverEditor()"><i class="fas fa-arrow-left"></i> BACK</button><div class="input-group" style="margin:0; flex:1; display:flex; gap:10px;"><input type="text" id="editorDriverNameInput" class="form-control" style="font-size:1.5rem; font-weight:800; color:var(--text-primary); height:auto; padding:5px 10px;"><button class="btn btn-primary" onclick="window.updateDriverName()">RENAME</button></div></div><div style="max-width: 400px; margin-bottom: 30px;"><label class="input-label">MAIN TEAM CONTRACT</label><select id="editorMainTeam" class="form-control" onchange="window.updateMainTeam()"></select><input type="hidden" id="editorDriverIdHidden"></div><div id="trackGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div><div style="margin-top: 32px; padding: 24px; background: #f8fafc; border: 1px solid var(--border-dim); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;"><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">TOTAL: <span id="calculatedTotal" style="color: var(--accent-cyan);">0</span> PTS</div><button class="btn btn-primary" onclick="window.saveAllChanges()">SAVE CHANGES</button></div></div></div></div>
                 </div>
 
                 <div id="race-director" class="section">
-                    <div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-flag-checkered"></i> RACE EDITOR</div></div><div class="panel-body"><div style="max-width: 400px; margin-bottom: 30px;"><label class="input-label">SELECT EVENT TO GRADE</label><select id="raceDirectorTrackSelect" class="form-control" onchange="window.loadRaceGrid()"><option>Loading...</option></select></div><div id="raceDirectorGrid" style="display:none;"><div class="data-grid" id="raceInputsContainer"></div><div style="margin-top: 30px; border-top: 1px solid var(--border-dim); padding-top: 24px; text-align: right;"><button class="btn btn-success" onclick="window.saveRaceResults()"><i class="fas fa-save"></i> COMMIT RESULTS</button></div></div></div></div>
+                    <div class="panel">
+                        <div class="panel-header"><div class="panel-title"><i class="fas fa-flag-checkered"></i> RACE EDITOR</div></div>
+                        <div class="panel-body">
+                            <div style="max-width: 400px; margin-bottom: 30px;">
+                                <label class="input-label">SELECT EVENT TO GRADE</label>
+                                <select id="raceDirectorTrackSelect" class="form-control" onchange="window.loadRaceGrid()"><option>Loading...</option></select>
+                            </div>
+                            <div id="raceDirectorGrid" style="display:none;">
+                                <div id="raceInputsContainer">
+                                    <h3 class="panel-title" style="margin: 0 0 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 10px;">THE GRID</h3>
+                                    <div class="data-grid" id="raceGridFull"></div>
+                                    
+                                    <h3 class="panel-title" style="margin: 30px 0 15px; border-bottom: 1px solid var(--border-dim); padding-bottom: 10px; color: var(--text-secondary);">RESERVES</h3>
+                                    <div class="data-grid" id="raceGridReserve"></div>
+                                </div>
+                                <div style="margin-top: 30px; border-top: 1px solid var(--border-dim); padding-top: 24px; text-align: right;">
+                                    <button class="btn btn-success" onclick="window.saveRaceResults()"><i class="fas fa-save"></i> COMMIT RESULTS</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="live-view" class="section">
-                    <div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr;"><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-cyan);"><i class="fas fa-trophy"></i> DRIVERS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>DRIVER</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveDriversBody"></tbody></table></div></div><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-red);"><i class="fas fa-wrench"></i> CONSTRUCTORS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveConstructorsBody"></tbody></table></div></div></div>
+                    <!-- REMOVED FIXED GRID COLUMNS TO FIX VISIBILITY -->
+                    <div class="dashboard-grid-full">
+                        <div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-cyan);"><i class="fas fa-trophy"></i> DRIVERS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>DRIVER</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveDriversBody"></tbody></table></div></div>
+                        <div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-red);"><i class="fas fa-wrench"></i> CONSTRUCTORS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveConstructorsBody"></tbody></table></div></div>
+                    </div>
                 </div>
 
                 <!-- UPDATED ANALYTICS SECTION -->
@@ -619,18 +676,21 @@
             "aston-martin": "#229971", "alpine": "#0093CC", "williams": "#64C4FF", "racing-bulls": "#1634CB",
             "kick-sauber": "#52E252", "haas": "#5B5B5B", "reserve": "#666666"
         };
+        
+        // UPDATED: Added Logo URLs to Main TEAMS Data
+        const LOGO_BASE = "https://raw.githubusercontent.com/HARISHWINNER/TTRL-RESOURCES/1de52755d3c67ebb0917c0fcc67ee3ed7bee1a4a/LOGOS/";
         const TEAMS = [
-            {id:'red-bull-racing', name:'Red Bull Racing', short:'Red Bull'}, 
-            {id:'ferrari', name:'Ferrari', short:'Ferrari'}, 
-            {id:'mercedes', name:'Mercedes-AMG', short:'Mercedes'},
-            {id:'mclaren', name:'McLaren', short:'McLaren'}, 
-            {id:'aston-martin', name:'Aston Martin', short:'Aston Martin'}, 
-            {id:'alpine', name:'Alpine', short:'Alpine'},
-            {id:'williams', name:'Williams', short:'Williams'}, 
-            {id:'racing-bulls', name:'Visa Cash App RB', short:'VCARB'}, 
-            {id:'kick-sauber', name:'Kick Sauber', short:'Sauber'},
-            {id:'haas', name:'Haas F1 Team', short:'Haas'}, 
-            {id:'reserve', name:'Reserve Driver', short:'Reserve'}
+            {id:'red-bull-racing', name:'Red Bull Racing', short:'Red Bull', logo: LOGO_BASE + 'redbull.png'}, 
+            {id:'ferrari', name:'Ferrari', short:'Ferrari', logo: LOGO_BASE + 'ferrari.png'}, 
+            {id:'mercedes', name:'Mercedes-AMG', short:'Mercedes', logo: LOGO_BASE + 'mercedes.png'},
+            {id:'mclaren', name:'McLaren', short:'McLaren', logo: LOGO_BASE + 'mclaren.png'}, 
+            {id:'aston-martin', name:'Aston Martin', short:'Aston Martin', logo: LOGO_BASE + 'martin.png'}, 
+            {id:'alpine', name:'Alpine', short:'Alpine', logo: LOGO_BASE + 'alpine.png'},
+            {id:'williams', name:'Williams', short:'Williams', logo: LOGO_BASE + 'williams.png'}, 
+            {id:'racing-bulls', name:'Visa Cash App RB', short:'VCARB', logo: LOGO_BASE + 'vcarb.png'}, 
+            {id:'kick-sauber', name:'Kick Sauber', short:'Sauber', logo: LOGO_BASE + 'kick_sauber.png'},
+            {id:'haas', name:'Haas F1 Team', short:'Haas', logo: LOGO_BASE + 'haas.png'}, 
+            {id:'reserve', name:'Reserve Driver', short:'Reserve', logo: 'https://placehold.co/40x40/666/fff?text=R'}
         ];
 
         const MASTER_TRACK_LIST = [
@@ -822,6 +882,11 @@
             if(target) target.classList.add('active');
             const items = document.querySelectorAll('.nav-btn');
             items.forEach(i => { if(i.getAttribute('onclick').includes(id)) i.classList.add('active'); });
+            
+            // EXPLICIT TRIGGER FOR LIVE VIEW VISIBILITY FIX
+            if(id === 'live-view') {
+                if(window.updateLiveTables) window.updateLiveTables();
+            }
         };
 
         window.toggleSidebar = () => {
@@ -1217,7 +1282,7 @@
 
         window.loadDriverData = (id) => {
             if(!id) return;
-            document.getElementById("editorSelectionGrid").style.display = "none"; document.getElementById("editor-area").style.display = "block";
+            document.getElementById("editorSelectionContainer").style.display = "none"; document.getElementById("editor-area").style.display = "block";
             const data = driversCache[id];
             
             // Populate Name Input (Fixed: Removed missing Display element)
@@ -1297,7 +1362,7 @@
             if(strip) strip.style.background = color;
         };
 
-        window.closeDriverEditor = () => { document.getElementById("editor-area").style.display = "none"; document.getElementById("editorSelectionGrid").style.display = "grid"; document.getElementById("editorDriverIdHidden").value = ""; };
+        window.closeDriverEditor = () => { document.getElementById("editor-area").style.display = "none"; document.getElementById("editorSelectionContainer").style.display = "block"; document.getElementById("editorDriverIdHidden").value = ""; };
         window.updateMainTeam = async () => { const id = document.getElementById("editorDriverIdHidden").value; if(!id) return; const team = document.getElementById("editorMainTeam").value; await updateDoc(doc(db, "seasons", currentSeason, "drivers", id), { team }); showToast("Main Contract Updated"); };
         window.calcTotal = () => { let s = 0; document.querySelectorAll(".pts-in").forEach(i => s += Number(i.value)||0); document.getElementById("calculatedTotal").innerText = s; };
         
@@ -1357,36 +1422,51 @@
 
         window.loadRaceGrid = () => {
             const tid = document.getElementById("raceDirectorTrackSelect").value; 
-            const con = document.getElementById("raceInputsContainer"); 
+            const conFull = document.getElementById("raceGridFull"); 
+            const conRes = document.getElementById("raceGridReserve"); 
             const wrap = document.getElementById("raceDirectorGrid"); 
             if(!tid) { wrap.style.display="none"; return; } 
             wrap.style.display="block"; 
-            con.innerHTML = "";
-            let gridHTML = "";
+            
+            conFull.innerHTML = "";
+            conRes.innerHTML = "";
+
             allDrivers.forEach(d => {
                 const r = d.results || {}; 
                 const pts = (r[tid] && typeof r[tid]==='object') ? r[tid].points : (r[tid] || 0); 
                 const pos = (r[tid] && typeof r[tid]==='object') ? r[tid].position : "";
                 let team = d.team; if (r[tid] && typeof r[tid] === 'object' && r[tid].team) { team = r[tid].team; }
                 const teamColor = getTeamColor(team);
-                const teamName = TEAMS.find(t => t.id === team)?.name || team;
+                
+                // Retrieve team details for display
+                const teamObj = TEAMS.find(t => t.id === team);
+                const teamName = teamObj?.name || team;
+                const teamLogo = teamObj?.logo || "";
                 
                 // FIXED: Removed the blue tint background for cards with points
                 const hasPoints = '';
                 
-                gridHTML += `
+                const cardHTML = `
                     <div class="driver-card" style="--team-color:${teamColor}; ${hasPoints}">
-                        <div class="driver-info">
-                            <span style="display:block; font-weight:700; color:var(--text-primary); font-size:1.05rem;">${d.name}</span>
-                            <span style="display:block; font-size:0.75rem; color:${teamColor}; font-weight:700; text-transform:uppercase; margin-top:2px;">${teamName}</span>
+                        <div style="display:flex; align-items:center;">
+                            ${teamLogo ? `<img src="${teamLogo}" class="admin-team-logo" alt="${teamName}">` : ''}
+                            <div class="driver-info">
+                                <span style="display:block; font-weight:700; color:var(--text-primary); font-size:1.05rem;">${d.name}</span>
+                                <span style="display:block; font-size:0.75rem; color:${teamColor}; font-weight:700; text-transform:uppercase; margin-top:2px;">${teamName}</span>
+                            </div>
                         </div>
                         <div style="display:flex; gap:5px; position:relative; z-index:2;">
                             <input type="text" class="rc-pos-input form-control" style="width:60px; text-align:center; padding:5px; font-size:0.9rem; font-weight:700; text-transform:uppercase;" placeholder="POS" value="${pos || ''}">
                             <input type="number" class="rc-points-input form-control" style="width:70px; text-align:center; padding:5px; font-weight:800; color:var(--accent-cyan);" placeholder="PTS" data-did="${d.id}" value="${pts}">
                         </div>
                     </div>`;
+
+                if(d.team === 'reserve') {
+                    conRes.innerHTML += cardHTML;
+                } else {
+                    conFull.innerHTML += cardHTML;
+                }
             });
-            con.innerHTML = gridHTML;
         };
 
         window.saveRaceResults = async () => {
@@ -1453,7 +1533,14 @@
 
             const d = driversCache[id]; 
             document.getElementById("statsDriverName").innerText = d.name.toUpperCase(); 
-            document.getElementById("statsTeamName").innerText = TEAMS.find(t=>t.id===d.team)?.name.toUpperCase() || d.team; 
+            
+            // UPDATED: Add Team Logo to Individual Stats Header
+            const teamObj = TEAMS.find(t => t.id === d.team);
+            const teamName = teamObj?.name.toUpperCase() || d.team;
+            const teamLogo = teamObj?.logo ? `<img src="${teamObj.logo}" style="height:24px; width:auto; vertical-align:middle; margin-right:8px; display:inline-block;">` : '';
+            
+            document.getElementById("statsTeamName").innerHTML = `${teamLogo}${teamName}`; 
+            
             document.getElementById("statPoints").innerHTML = `${d.totalPoints} <span style="font-size:1rem; color:var(--text-secondary);">PTS</span>`;
             
             let w=0, p=0, r=0, entries=0, best=0, hHTML=""; 
@@ -1504,6 +1591,12 @@
             const dA = driversCache[idA];
             const dB = driversCache[idB];
 
+            // Get Team Logos for comparison cards
+            const teamA = TEAMS.find(t => t.id === dA.team);
+            const teamB = TEAMS.find(t => t.id === dB.team);
+            const logoA = teamA?.logo ? `<img src="${teamA.logo}" style="height:50px; width:auto; margin:0 auto 10px; display:block;">` : '';
+            const logoB = teamB?.logo ? `<img src="${teamB.logo}" style="height:50px; width:auto; margin:0 auto 10px; display:block;">` : '';
+
             let ptsA = 0, ptsB = 0;
             let winsA = 0, winsB = 0;
             let bestA = 99, bestB = 99;
@@ -1541,12 +1634,14 @@
             container.innerHTML = `
                 <div class="comparison-grid">
                     <div class="comp-card">
+                        ${logoA}
                         <h3>${dA.name}</h3>
                         <h1 style="color:var(--accent-cyan); font-size:2.5rem;">${ptsA}</h1>
                         <p>POINTS</p>
                     </div>
                     <div class="vs-badge">VS</div>
                     <div class="comp-card">
+                        ${logoB}
                         <h3>${dB.name}</h3>
                         <h1 style="color:var(--accent-red); font-size:2.5rem;">${ptsB}</h1>
                         <p>POINTS</p>
@@ -1593,6 +1688,15 @@
             container.style.display = 'block';
             document.getElementById('statsDisplay').style.display = 'none';
 
+            // Get Team Info & Logos
+            const teamObjA = TEAMS.find(x => x.id === tA);
+            const teamObjB = TEAMS.find(x => x.id === tB);
+            const teamNameA = teamObjA?.name || tA;
+            const teamNameB = teamObjB?.name || tB;
+            const logoA = teamObjA?.logo ? `<img src="${teamObjA.logo}" style="height:60px; width:auto; margin:0 auto 10px; display:block;">` : '';
+            const logoB = teamObjB?.logo ? `<img src="${teamObjB.logo}" style="height:60px; width:auto; margin:0 auto 10px; display:block;">` : '';
+
+
             // Aggregate Data
             let ptsA = 0, ptsB = 0;
             let winsA = 0, winsB = 0;
@@ -1631,18 +1735,17 @@
                 }
             });
 
-            const teamNameA = TEAMS.find(x => x.id === tA)?.name || tA;
-            const teamNameB = TEAMS.find(x => x.id === tB)?.name || tB;
-
             container.innerHTML = `
                 <div class="comparison-grid">
                     <div class="comp-card" style="border-top:4px solid ${getTeamColor(tA)}">
+                        ${logoA}
                         <h3>${teamNameA}</h3>
                         <h1 style="color:var(--text-primary); font-size:2.5rem;">${cumA}</h1>
                         <p>POINTS</p>
                     </div>
                     <div class="vs-badge">VS</div>
                     <div class="comp-card" style="border-top:4px solid ${getTeamColor(tB)}">
+                        ${logoB}
                         <h3>${teamNameB}</h3>
                         <h1 style="color:var(--text-primary); font-size:2.5rem;">${cumB}</h1>
                         <p>POINTS</p>
@@ -1678,38 +1781,104 @@
         }
 
         // --- VISUALIZATION HELPERS ---
-        function updateLiveTables() {
+        window.updateLiveTables = function() {
             const tD = document.getElementById("liveDriversBody"); 
             if(tD) {
                 tD.innerHTML = "";
-                const sorted = [...allDrivers].sort((a,b) => { if(a.team==='reserve' && b.team!=='reserve') return 1; if(a.team!=='reserve' && b.team==='reserve') return -1; return b.totalPoints - a.totalPoints; });
-                sorted.forEach((d,i) => { tD.innerHTML += `<tr><td style="color:var(--text-secondary); font-weight:600;">${String(i+1).padStart(2,'0')}</td><td><div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${d.name}</div><div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:600;">${d.team.toUpperCase()}</div></td><td style="text-align:right; font-weight:800; font-size:1.1rem; color:var(--accent-cyan);">${d.totalPoints}</td></tr>`; });
+                // Safe sort with defaults to prevent crashes
+                const sorted = [...allDrivers].sort((a,b) => { 
+                    const tA = a.team || 'reserve';
+                    const tB = b.team || 'reserve';
+                    if(tA==='reserve' && tB!=='reserve') return 1; 
+                    if(tA!=='reserve' && tB==='reserve') return -1; 
+                    return (b.totalPoints || 0) - (a.totalPoints || 0); 
+                });
+
+                if (sorted.length === 0) {
+                    tD.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">NO DRIVER DATA</td></tr>`;
+                } else {
+                    sorted.forEach((d,i) => { 
+                        const dName = d.name || 'UNKNOWN';
+                        const dTeam = d.team || 'reserve';
+                        const dPts = d.totalPoints || 0;
+                        const teamObj = TEAMS.find(t => t.id === dTeam);
+                        const teamLogo = teamObj?.logo ? `<img src="${teamObj.logo}" style="width:20px; height:20px; object-fit:contain; margin-right:8px; vertical-align:middle;">` : '';
+
+                        tD.innerHTML += `<tr>
+                            <td style="color:var(--text-secondary); font-weight:600;">${String(i+1).padStart(2,'0')}</td>
+                            <td>
+                                <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${dName}</div>
+                                <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:600; display:flex; align-items:center; margin-top:2px;">
+                                    ${teamLogo} ${dTeam.toUpperCase()}
+                                </div>
+                            </td>
+                            <td style="text-align:right; font-weight:800; font-size:1.1rem; color:var(--accent-cyan);">${dPts}</td>
+                        </tr>`; 
+                    });
+                }
             }
             
             const tC = document.getElementById("liveConstructorsBody"); 
             if(tC) {
                 tC.innerHTML = "";
-                const teamPts = {}; allDrivers.forEach(d => { const res = d.results || {}; Object.values(res).forEach(r => { const p = (typeof r === 'object') ? r.points : r; const t = (typeof r === 'object') ? r.team : d.team; if(t !== 'reserve') { teamPts[t] = (teamPts[t]||0) + p; } }); });
-                Object.keys(teamPts).map(k => ({id:k, p:teamPts[k]})).sort((a,b) => b.p - a.p).forEach((x,i) => { const tn = TEAMS.find(t=>t.id===x.id)?.name || x.id; tC.innerHTML += `<tr><td style="color:var(--text-secondary); font-weight:600;">${String(i+1).padStart(2,'0')}</td><td style="font-weight:700; color:var(--text-primary); text-transform:uppercase; font-size:0.95rem;">${tn}</td><td style="text-align:right; font-weight:800; color:var(--accent-red); font-size:1.1rem;">${x.p}</td></tr>`; });
+                const teamPts = {}; 
+                allDrivers.forEach(d => { 
+                    const res = d.results || {}; 
+                    Object.values(res).forEach(r => { 
+                        const p = (typeof r === 'object') ? (r.points||0) : (r||0); 
+                        // Robust fallback: if result object doesn't have team, use driver's current team
+                        const t = (typeof r === 'object' && r.team) ? r.team : d.team; 
+                        if(t && t !== 'reserve') { 
+                            teamPts[t] = (teamPts[t]||0) + p; 
+                        } 
+                    }); 
+                });
+
+                const sortedTeams = Object.keys(teamPts).map(k => ({id:k, p:teamPts[k]})).sort((a,b) => b.p - a.p);
+                
+                if (sortedTeams.length === 0) {
+                     tC.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">NO CONSTRUCTOR DATA</td></tr>`;
+                } else {
+                    sortedTeams.forEach((x,i) => { 
+                        const teamObj = TEAMS.find(t => t.id === x.id);
+                        const tn = teamObj?.name || x.id.toUpperCase(); 
+                        const teamLogo = teamObj?.logo ? `<img src="${teamObj.logo}" style="width:24px; height:24px; object-fit:contain; margin-right:10px; vertical-align:middle;">` : '';
+
+                        tC.innerHTML += `<tr>
+                            <td style="color:var(--text-secondary); font-weight:600;">${String(i+1).padStart(2,'0')}</td>
+                            <td style="font-weight:700; color:var(--text-primary); text-transform:uppercase; font-size:0.95rem; display:flex; align-items:center;">
+                                ${teamLogo} ${tn}
+                            </td>
+                            <td style="text-align:right; font-weight:800; color:var(--accent-red); font-size:1.1rem;">${x.p}</td>
+                        </tr>`; 
+                    });
+                }
             }
-        }
+        };
 
         // --- DRIVER DATA ---
         function initListener() {
             if(unsubscribe) unsubscribe();
             const q = query(collection(db, "seasons", currentSeason, "drivers")); 
             unsubscribe = onSnapshot(q, (snap) => {
-                const list = document.getElementById("driverList");
+                const listFull = document.getElementById("driverListFull");
+                const listRes = document.getElementById("driverListReserve");
                 const statSel = document.getElementById("statsDriverSelect");
                 const statSelA = document.getElementById("statsDriverA");
                 const statSelB = document.getElementById("statsDriverB");
-                const grid = document.getElementById("editorSelectionGrid");
                 
-                if(list) list.innerHTML = ""; 
+                // NEW: Get separate grid containers for the Editor
+                const editGridFull = document.getElementById("editorGridFull");
+                const editGridRes = document.getElementById("editorGridReserve");
+                
+                if(listFull) listFull.innerHTML = ""; 
+                if(listRes) listRes.innerHTML = ""; 
+                if(editGridFull) editGridFull.innerHTML = ""; // Clear new editor grids
+                if(editGridRes) editGridRes.innerHTML = "";
+                
                 if(statSel) statSel.innerHTML = '<option value="">-- SELECT DRIVER --</option>'; 
                 if(statSelA) statSelA.innerHTML = '<option value="">Select Driver A</option>'; 
                 if(statSelB) statSelB.innerHTML = '<option value="">Select Driver B</option>'; 
-                if(grid) grid.innerHTML = ""; 
                 
                 allDrivers = [];
                 snap.forEach(d => { const data = d.data(); data.id = d.id; driversCache[d.id] = data; allDrivers.push(data); });
@@ -1722,23 +1891,50 @@
                 
                 allDrivers.forEach(data => {
                     const teamColor = TEAM_COLORS[data.team] || '#94a3b8';
-                    const teamName = TEAMS.find(t => t.id === data.team)?.name || data.team;
+                    const teamObj = TEAMS.find(t => t.id === data.team);
+                    const teamName = teamObj?.name || data.team;
+                    const teamLogo = teamObj?.logo || "";
+                    
                     const opt = `<option value="${data.id}">${data.name.toUpperCase()}</option>`;
                     
                     if(statSel) statSel.innerHTML += opt;
                     if(statSelA) statSelA.innerHTML += opt;
                     if(statSelB) statSelB.innerHTML += opt;
 
-                    if(list) list.innerHTML += `<div class="driver-card" style="--team-color:${teamColor}"><div style="display:flex; align-items:center; gap:12px; position:relative; z-index:2;"><input type="checkbox" class="driver-checkbox" value="${data.id}" style="transform:scale(1.2);"><div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div></div><button class="icon-btn delete" onclick="window.deleteDriver('${data.id}')"><i class="fas fa-trash"></i></button></div>`;
-                    if(grid) grid.innerHTML += `<div class="driver-card" style="--team-color:${teamColor}; cursor:pointer;" onclick="loadDriverData('${data.id}')"><div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div><div style="position:relative; z-index:2; font-family:var(--font-display); font-size:1.2rem; color:var(--accent-cyan); font-weight:800;">${data.totalPoints} PTS</div></div>`;
+                    // HTML for Onboarding List
+                    const onboardCard = `<div class="driver-card" style="--team-color:${teamColor}">
+                        <div style="display:flex; align-items:center; gap:12px; position:relative; z-index:2;">
+                            <input type="checkbox" class="driver-checkbox" value="${data.id}" style="transform:scale(1.2);">
+                            ${teamLogo ? `<img src="${teamLogo}" class="admin-team-logo" alt="logo">` : ''}
+                            <div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div>
+                        </div>
+                        <button class="icon-btn delete" onclick="window.deleteDriver('${data.id}')"><i class="fas fa-trash"></i></button>
+                    </div>`;
+
+                    // HTML for Editor Selection
+                    const editorCard = `<div class="driver-card" style="--team-color:${teamColor}; cursor:pointer;" onclick="loadDriverData('${data.id}')">
+                        <div style="display:flex; align-items:center;">
+                            ${teamLogo ? `<img src="${teamLogo}" class="admin-team-logo" alt="logo">` : ''}
+                            <div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div>
+                        </div>
+                        <div style="position:relative; z-index:2; font-family:var(--font-display); font-size:1.2rem; color:var(--accent-cyan); font-weight:800;">${data.totalPoints} PTS</div>
+                    </div>`;
+
+                    if(data.team === 'reserve') {
+                        if(listRes) listRes.innerHTML += onboardCard;
+                        if(editGridRes) editGridRes.innerHTML += editorCard;
+                    } else {
+                        if(listFull) listFull.innerHTML += onboardCard;
+                        if(editGridFull) editGridFull.innerHTML += editorCard;
+                    }
                 });
+                
                 if(document.getElementById("raceDirectorGrid") && document.getElementById("raceDirectorGrid").style.display === "block") loadRaceGrid();
                 const currentEditId = document.getElementById("editorDriverIdHidden") ? document.getElementById("editorDriverIdHidden").value : null;
                 if(currentEditId && document.getElementById("editor-area") && document.getElementById("editor-area").style.display === "block" && driversCache[currentEditId]) loadDriverData(currentEditId);
                 updateDashboard();
-                updateLiveTables();
+                window.updateLiveTables(); 
                 
-                // Refresh analytics if in view
                 const mode = document.getElementById('statsMode') ? document.getElementById('statsMode').value : 'individual';
                 if(mode !== 'individual') renderStats(); 
             });
