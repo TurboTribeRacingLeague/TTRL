@@ -281,7 +281,10 @@
         /* TABLES (Glass) */
         .tech-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9rem; color: #eee; }
         .tech-table th { text-align: left; padding: 16px 20px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--border-dim); font-weight: 600; letter-spacing: 0.5px; background: rgba(255,255,255,0.02); }
-        .tech-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-dim); color: #fff; font-weight: 400; }
+        
+        /* UPDATED: Vertical Align for Table Cells */
+        .tech-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-dim); color: #fff; font-weight: 400; vertical-align: middle; }
+        
         .tech-table tr:hover td { background: rgba(255,255,255,0.05); }
         .tech-table tr:last-child td { border-bottom: none; }
         
@@ -944,7 +947,7 @@
                                     <h4 style="border-bottom:1px solid var(--border-dim); padding-bottom:10px; margin-bottom:15px; color:var(--accent-yellow);">INTERFACE</h4>
                                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
                                         <span>Compact Sidebar</span>
-                                        <input type="checkbox" onchange="document.getElementById('appSidebar').classList.toggle('collapsed')">
+                                        <input type="checkbox" id="settingSidebarCb" onchange="window.toggleSidebar()">
                                     </div>
                                      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
                                         <span>High Contrast Mode (Dev)</span>
@@ -1114,6 +1117,13 @@
             populateDropdowns();
             await refreshSeasonList(); // Fetch available seasons from Firebase first
             
+            // Apply sidebar preference
+            if(localStorage.getItem('ttrl_sidebar_collapsed') === 'true') {
+                document.getElementById('appSidebar').classList.add('collapsed');
+                const settingCb = document.getElementById('settingSidebarCb');
+                if(settingCb) settingCb.checked = true;
+            }
+
             // Default to season_1 if input is empty, or keep current value
             const currentInput = document.getElementById("seasonInput").value;
             if(!currentInput) {
@@ -1255,8 +1265,16 @@
             }
         };
 
+        // Improved toggleSidebar with persistence
         window.toggleSidebar = () => {
-             document.getElementById('appSidebar').classList.toggle('collapsed');
+             const sb = document.getElementById('appSidebar');
+             sb.classList.toggle('collapsed');
+             const isCollapsed = sb.classList.contains('collapsed');
+             localStorage.setItem('ttrl_sidebar_collapsed', isCollapsed);
+             
+             // Sync settings checkbox if it exists
+             const settingCb = document.getElementById('settingSidebarCb');
+             if(settingCb) settingCb.checked = isCollapsed;
         };
 
         window.closeModal = () => document.getElementById('confirmModal').style.display = 'none';
@@ -2228,8 +2246,10 @@
 
                         tC.innerHTML += `<tr>
                             <td style="color:var(--text-secondary); font-weight:600;">${String(i+1).padStart(2,'0')}</td>
-                            <td style="font-weight:700; color:var(--text-primary); text-transform:uppercase; font-size:0.95rem; display:flex; align-items:center;">
-                                ${teamLogo} ${tn}
+                            <td>
+                                <div style="font-weight:700; color:var(--text-primary); text-transform:uppercase; font-size:0.95rem; display:flex; align-items:center;">
+                                    ${teamLogo} ${tn}
+                                </div>
                             </td>
                             <td style="text-align:right; font-weight:800; color:var(--accent-red); font-size:1.1rem;">${x.p}</td>
                         </tr>`; 
@@ -2248,6 +2268,7 @@
                 const statSel = document.getElementById("statsDriverSelect");
                 const statSelA = document.getElementById("statsDriverA");
                 const statSelB = document.getElementById("statsDriverB");
+                const grid = document.getElementById("editorSelectionGrid");
                 
                 // NEW: Get separate grid containers for the Editor
                 const editGridFull = document.getElementById("editorGridFull");
@@ -2261,6 +2282,7 @@
                 if(statSel) statSel.innerHTML = '<option value="">-- SELECT DRIVER --</option>'; 
                 if(statSelA) statSelA.innerHTML = '<option value="">Select Driver A</option>'; 
                 if(statSelB) statSelB.innerHTML = '<option value="">Select Driver B</option>'; 
+                if(grid) grid.innerHTML = ""; 
                 
                 allDrivers = [];
                 snap.forEach(d => { const data = d.data(); data.id = d.id; driversCache[d.id] = data; allDrivers.push(data); });
