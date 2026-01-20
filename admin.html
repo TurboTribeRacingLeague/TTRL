@@ -842,7 +842,30 @@
         </div>
     </div>
     
-    <div id="migrationModal" class="modal-overlay"><div class="modal-box" style="border-top: 4px solid var(--accent-cyan);"><div class="modal-title" style="color: var(--accent-cyan);">DATA MIGRATION</div><p style="color: var(--text-secondary); margin-bottom: 24px;">Transfer data between seasons.</p><div style="text-align: left; margin-bottom: 16px;"><label class="input-label">SOURCE (COPY FROM)</label><input type="text" id="migrateSource" class="form-control" placeholder="e.g. season_1"></div><div style="text-align: left; margin-bottom: 24px;"><label class="input-label">TARGET (PASTE TO)</label><input type="text" id="migrateTarget" class="form-control" placeholder="e.g. season_2"></div><div style="text-align: left; margin-bottom: 28px; display: flex; align-items: center; gap: 12px;"><input type="checkbox" id="migrateDelete"><label for="migrateDelete" style="font-size: 0.85rem; color: var(--text-primary); font-weight:600;">DELETE SOURCE AFTER COPY</label></div><div style="display: flex; gap: 16px; justify-content: center;"><button onclick="window.performMigration()" class="btn btn-primary">TRANSFER</button><button onclick="document.getElementById('migrationModal').style.display='none'" class="btn">CANCEL</button></div><div id="migrationStatus" style="margin-top: 16px; color: var(--accent-cyan); font-family: var(--font-data); font-size: 0.85rem; font-weight:700;"></div></div></div>
+    <div id="migrationModal" class="modal-overlay">
+        <div class="modal-box" style="border-top: 4px solid var(--accent-cyan);">
+            <div class="modal-title" style="color: var(--accent-cyan);">DATA MIGRATION</div>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">Transfer data between seasons.</p>
+            
+            <!-- Added DataList for Season Suggestions -->
+            <datalist id="seasonMigrationList"></datalist>
+
+            <div style="text-align: left; margin-bottom: 16px;">
+                <label class="input-label">SOURCE (COPY FROM)</label>
+                <!-- Added list attribute -->
+                <input type="text" id="migrateSource" class="form-control" placeholder="e.g. season_1" list="seasonMigrationList">
+            </div>
+            <div style="text-align: left; margin-bottom: 24px;">
+                <label class="input-label">TARGET (PASTE TO)</label>
+                <!-- Added list attribute -->
+                <input type="text" id="migrateTarget" class="form-control" placeholder="e.g. season_2" list="seasonMigrationList">
+            </div>
+            
+            <div style="text-align: left; margin-bottom: 28px; display: flex; align-items: center; gap: 12px;"><input type="checkbox" id="migrateDelete"><label for="migrateDelete" style="font-size: 0.85rem; color: var(--text-primary); font-weight:600;">DELETE SOURCE AFTER COPY</label></div>
+            <div style="display: flex; gap: 16px; justify-content: center;"><button onclick="window.performMigration()" class="btn btn-primary">TRANSFER</button><button onclick="document.getElementById('migrationModal').style.display='none'" class="btn">CANCEL</button></div>
+            <div id="migrationStatus" style="margin-top: 16px; color: var(--accent-cyan); font-family: var(--font-data); font-size: 0.85rem; font-weight:700;"></div>
+        </div>
+    </div>
     
     <div id="toast" class="toast">Notification</div>
 
@@ -960,6 +983,8 @@
         window.refreshSeasonList = async () => {
             const dashListEl = document.getElementById('dashSeasonsBody');
             const statusEl = document.getElementById('seasonStatusMsg');
+            const migrationList = document.getElementById('seasonMigrationList'); // Get the datalist
+
             if(statusEl) statusEl.innerText = "FETCHING LIST...";
             if(dashListEl) dashListEl.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Fetching...</span>';
             try {
@@ -967,8 +992,11 @@
                 const querySnapshot = await getDocs(q);
                 const seasonsFound = [];
                 if(dashListEl) dashListEl.innerHTML = '';
+                if(migrationList) migrationList.innerHTML = ''; // Clear existing options
+
                 querySnapshot.forEach((doc) => {
                     seasonsFound.push(doc.id);
+                    // Add to Dashboard
                     if(dashListEl) {
                         const sBtn = document.createElement('button');
                         sBtn.className = 'btn';
@@ -976,6 +1004,12 @@
                         sBtn.innerHTML = `<i class="fas fa-folder"></i> ${doc.id}`;
                         sBtn.onclick = () => { document.getElementById('seasonInput').value = doc.id; window.changeSeason(); };
                         dashListEl.appendChild(sBtn);
+                    }
+                    // Add to Migration Datalist
+                    if(migrationList) {
+                        const opt = document.createElement('option');
+                        opt.value = doc.id;
+                        migrationList.appendChild(opt);
                     }
                 });
                 if(seasonsFound.length === 0 && dashListEl) dashListEl.innerHTML = '<span style="color:var(--text-muted);">No seasons found.</span>';
