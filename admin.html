@@ -773,8 +773,8 @@
                                         <div class="tw-mb-6">
                                             <h3 class="tw-text-lg tw-font-bold tw-text-red-500 tw-mb-3 tw-border-b tw-border-gray-700 tw-pb-1">Pole Position</h3>
                                             <div class="tw-grid tw-grid-cols-3 tw-gap-2">
-                                                <select id="rg_pp_driver" class="tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);"></select>
-                                                <select id="rg_pp_team" class="tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);"></select>
+                                                <select id="rg_pp_driver" class="tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none" style="background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-dim); color: var(--text-primary); backdrop-filter: blur(10px);"></select>
+                                                <select id="rg_pp_team" class="tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none" style="background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-dim); color: var(--text-primary); backdrop-filter: blur(10px);"></select>
                                                 <input type="text" id="rg_pp_time" placeholder="Time" value="1:10.123" class="tw-p-2 tw-rounded tw-text-xs tw-text-center tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);">
                                             </div>
                                         </div>
@@ -1297,11 +1297,12 @@
                     const div = document.createElement('div'); 
                     // distinct row card
                     div.className = 'tw-grid tw-grid-cols-12 tw-gap-2 tw-items-center tw-p-2 tw-rounded-lg tw-mb-2 tw-transition-all tw-shadow-sm';
-                    div.style = 'background: var(--bg-panel); border: 1px solid var(--border-dim); backdrop-filter: blur(5px);';
+                    // Use a slightly opaque glass background for the row itself
+                    div.style = `background: var(--bg-panel); border: 1px solid var(--border-dim); backdrop-filter: blur(5px); position: relative; z-index: ${50 - i};`;
                     const teamOpts = Object.keys(rg_teamLogos).map(t => `<option value="${t}" ${data.team === t ? 'selected' : ''}>${t}</option>`).join(''); 
                     
-                    // cleaner input styles using vars
-                    const baseInputStyle = "background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);";
+                    // Unified dark glass style for inputs
+                    const baseInputStyle = "background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-dim); color: var(--text-primary); backdrop-filter: blur(5px);";
                     const inputClass = "tw-w-full tw-text-xs tw-py-1.5 tw-px-2 tw-rounded focus:tw-border-blue-500 focus:tw-ring-1 focus:tw-ring-blue-500 tw-outline-none tw-text-center tw-font-mono";
                     const textInputClass = "tw-w-full tw-text-xs tw-py-1.5 tw-px-2 tw-rounded focus:tw-border-blue-500 focus:tw-ring-1 focus:tw-ring-blue-500 tw-outline-none tw-uppercase"; // Left aligned for text
                     const selectClass = "tw-col-span-2 tw-text-[10px] tw-py-1.5 tw-px-2 tw-rounded focus:tw-border-blue-500 tw-outline-none";
@@ -1321,7 +1322,8 @@
                             <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-7 tw-flex tw-items-center tw-justify-center tw-cursor-pointer tw-text-gray-500 hover:tw-text-blue-400" onclick="window.toggleRgDropdown(${i})">
                                 <i class="fas fa-chevron-down tw-text-[10px]"></i>
                             </div>
-                            <div id="rg_dd_${i}" class="tw-absolute tw-z-50 tw-w-full tw-rounded-md tw-mt-1 tw-max-h-48 tw-overflow-y-auto tw-hidden tw-shadow-2xl tw-flex tw-flex-col" style="background: var(--bg-header); border: 1px solid var(--border-dim); backdrop-filter: blur(10px);">
+                            <!-- UPDATED DROPDOWN STYLE: Dark semi-transparent background with heavy blur -->
+                            <div id="rg_dd_${i}" class="tw-absolute tw-z-50 tw-w-full tw-rounded-md tw-mt-1 tw-max-h-48 tw-overflow-y-auto tw-hidden tw-shadow-2xl tw-flex tw-flex-col" style="background: rgba(17, 24, 39, 0.9); border: 1px solid var(--border-dim); backdrop-filter: blur(12px);">
                                 <!-- Options go here -->
                             </div>
                         </div>
@@ -1362,7 +1364,8 @@
                     const createHeader = (title) => {
                         const h = document.createElement('div');
                         h.className = 'tw-px-3 tw-py-1 tw-text-[10px] tw-font-bold tw-text-gray-500 tw-uppercase tw-tracking-wider tw-border-b dd-header';
-                        h.style = "background: var(--bg-body); border-bottom: 1px solid var(--border-dim); opacity: 0.8;";
+                        // Keep header slightly transparent to blend with dropdown bg
+                        h.style = "background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-dim);";
                         h.textContent = title;
                         return h;
                     };
