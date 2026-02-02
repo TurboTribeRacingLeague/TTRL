@@ -32,7 +32,7 @@
         /* ================== ADMIN PANEL STYLES ================== */
         :root {
             /* --- DEFAULT DARK GLASSMORPHISM PALETTE --- */
-            --bg-body: #080710;       
+            --bg-body: #080710;        
             --bg-panel: rgba(255, 255, 255, 0.05); /* Very transparent */
             --bg-header: rgba(255, 255, 255, 0.03);
             --sidebar-bg: rgba(255, 255, 255, 0.03);    
@@ -44,15 +44,15 @@
             --input-bg: rgba(255, 255, 255, 0.07);
             
             /* Accents remain bright for contrast */
-            --accent-cyan: #23a2f6;   
-            --accent-red: #ff512f;    
+            --accent-cyan: #23a2f6;    
+            --accent-red: #ff512f;     
             --accent-green: #10b981; 
             --accent-yellow: #f09819; 
             --accent-purple: #8b5cf6; 
             
-            --text-primary: #ffffff;   
+            --text-primary: #ffffff;    
             --text-secondary: #e5e5e5; 
-            --text-muted: #a0a0a0;      
+            --text-muted: #a0a0a0;       
             
             --font-display: 'Poppins', sans-serif; 
             --font-ui: 'Poppins', sans-serif;
@@ -70,7 +70,7 @@
 
         /* --- LIGHT THEME OVERRIDES --- */
         [data-theme="light"] {
-            --bg-body: #f0f4f8;       
+            --bg-body: #f0f4f8;        
             --bg-panel: rgba(255, 255, 255, 0.65); /* High opacity white glass */
             --bg-header: rgba(255, 255, 255, 0.75);
             --sidebar-bg: rgba(255, 255, 255, 0.85);    
@@ -81,13 +81,13 @@
             --hover-bg: rgba(0, 0, 0, 0.05);
             --input-bg: rgba(255, 255, 255, 0.5);
 
-            --accent-cyan: #0284c7;   
-            --accent-red: #dc2626;    
+            --accent-cyan: #0284c7;    
+            --accent-red: #dc2626;     
             --accent-green: #059669; 
             --accent-yellow: #d97706; 
             --accent-purple: #7c3aed; 
             
-            --text-primary: #1e293b;   
+            --text-primary: #1e293b;    
             --text-secondary: #475569; 
             --text-muted: #64748b;
 
@@ -627,8 +627,8 @@
                 </div>
 
                 <div class="action-cluster">
-                     <!-- FIXED TOGGLE SWITCH -->
-                     <div class="theme-switch-wrapper">
+                      <!-- FIXED TOGGLE SWITCH -->
+                      <div class="theme-switch-wrapper">
                         <label class="theme-switch" for="theme-toggle-top">
                             <input type="checkbox" id="theme-toggle-top" onchange="window.toggleTheme()">
                             <span class="slider"></span>
@@ -751,40 +751,44 @@
                     <div class="panel">
                         <div class="panel-header">
                             <div class="panel-title"><i class="fas fa-image"></i> RESULT IMAGE GENERATOR</div>
+                             <div class="action-cluster">
+                                <button id="rg_syncBtn" class="btn btn-primary"><i class="fas fa-sync"></i> SYNC ROSTER</button>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <!-- INTEGRATED GENERATOR CONTAINER -->
                             <!-- CHANGED LAYOUT: Vertical Stack (tw-flex-col) and Removed xl:tw-flex-row -->
-                            <div id="rg_container" class="tw-w-full tw-bg-gray-900 tw-text-white tw-font-sans tw-p-4 tw-rounded-xl">
+                            <div id="rg_container" class="tw-w-full tw-text-white tw-font-sans tw-p-4 tw-rounded-xl" style="background: transparent;">
                                 <div class="tw-flex tw-flex-col tw-gap-6 tw-p-4">
                                     
                                     <!-- GENERATOR CONTROLS (Full Width Top) -->
-                                    <div class="tw-w-full tw-bg-gray-800 tw-p-5 tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-700 tw-h-fit">
+                                    <div class="tw-w-full tw-p-5 tw-rounded-xl tw-shadow-lg tw-border tw-h-fit" style="background: var(--bg-header); border: 1px solid var(--border-dim); backdrop-filter: var(--glass-blur);">
                                         <div class="tw-mb-6">
                                             <h3 class="tw-text-lg tw-font-bold tw-text-red-500 tw-mb-3 tw-border-b tw-border-gray-700 tw-pb-1">Event Details</h3>
                                             <div class="tw-space-y-3">
-                                                <input type="text" id="rg_leagueName" value="TTRL SEASON 1" class="tw-w-full tw-bg-gray-700 tw-text-white tw-p-2 tw-rounded tw-text-sm tw-focus:ring-1 tw-focus:ring-red-500 tw-outline-none" placeholder="League Name">
-                                                <input type="text" id="rg_trackName" value="(TRACK NAME) GP 2025" class="tw-w-full tw-bg-gray-700 tw-text-white tw-p-2 tw-rounded tw-text-sm tw-focus:ring-1 tw-focus:ring-red-500 tw-outline-none" placeholder="Track & Year">
+                                                <input type="text" id="rg_leagueName" value="TTRL SEASON 1" class="tw-w-full tw-p-2 tw-rounded tw-text-sm tw-focus:ring-1 tw-focus:ring-red-500 tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);" placeholder="League Name">
+                                                <input type="text" id="rg_trackName" value="(TRACK NAME) GP 2025" class="tw-w-full tw-p-2 tw-rounded tw-text-sm tw-focus:ring-1 tw-focus:ring-red-500 tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);" placeholder="Track & Year">
                                             </div>
                                         </div>
                                         <div class="tw-mb-6">
                                             <h3 class="tw-text-lg tw-font-bold tw-text-red-500 tw-mb-3 tw-border-b tw-border-gray-700 tw-pb-1">Pole Position</h3>
                                             <div class="tw-grid tw-grid-cols-3 tw-gap-2">
-                                                <select id="rg_pp_driver" class="tw-bg-gray-700 tw-text-white tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none"></select>
-                                                <select id="rg_pp_team" class="tw-bg-gray-700 tw-text-white tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none"></select>
-                                                <input type="text" id="rg_pp_time" placeholder="Time" value="1:10.123" class="tw-bg-gray-700 tw-text-white tw-p-2 tw-rounded tw-text-xs tw-text-center tw-outline-none">
+                                                <select id="rg_pp_driver" class="tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);"></select>
+                                                <select id="rg_pp_team" class="tw-p-2 tw-rounded tw-text-xs tw-uppercase tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);"></select>
+                                                <input type="text" id="rg_pp_time" placeholder="Time" value="1:10.123" class="tw-p-2 tw-rounded tw-text-xs tw-text-center tw-outline-none" style="background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);">
                                             </div>
                                         </div>
                                         <div class="tw-mb-6">
                                             <h3 class="tw-text-lg tw-font-bold tw-text-red-500 tw-mb-3 tw-border-b tw-border-gray-700 tw-pb-1">Standings (Top 20)</h3>
-                                            <div class="tw-grid tw-grid-cols-12 tw-gap-1 tw-text-[10px] tw-text-gray-400 tw-mb-2 tw-px-1 tw-font-bold tw-uppercase tw-tracking-wider tw-text-center">
-                                                <span class="tw-col-span-1">#</span>
+                                            <!-- NEW HEADER UI -->
+                                            <div class="tw-grid tw-grid-cols-12 tw-gap-2 tw-text-[10px] tw-text-gray-400 tw-mb-2 tw-px-3 tw-py-2 tw-bg-gray-900/50 tw-rounded-lg tw-font-bold tw-uppercase tw-tracking-wider tw-text-center tw-items-center" style="background: var(--bg-header); border: 1px solid var(--border-dim);">
+                                                <span class="tw-col-span-1">Pos</span>
                                                 <span class="tw-col-span-3 tw-text-left tw-pl-1">Driver</span>
                                                 <span class="tw-col-span-2">Team</span>
                                                 <span class="tw-col-span-1">Grid</span>
-                                                <span class="tw-col-span-1">Stop</span>
-                                                <span class="tw-col-span-2">Time</span>
-                                                <span class="tw-col-span-1">Fast</span>
+                                                <span class="tw-col-span-1">Stops</span>
+                                                <span class="tw-col-span-2">Time/Gap</span>
+                                                <span class="tw-col-span-1">Fastest</span>
                                                 <span class="tw-col-span-1">Pts</span>
                                             </div>
                                             <!-- REMOVED SCROLLBAR AND HEIGHT LIMIT -->
@@ -806,7 +810,7 @@
 
                                     <!-- GENERATOR PREVIEW (Full Width Bottom) -->
                                     <div class="tw-w-full">
-                                        <div class="tw-bg-gray-800 tw-p-1 tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-700 tw-overflow-x-auto">
+                                        <div class="tw-p-1 tw-rounded-xl tw-shadow-lg tw-border tw-overflow-x-auto" style="background: var(--bg-header); border: 1px solid var(--border-dim); backdrop-filter: var(--glass-blur);">
                                             <div class="tw-min-w-max tw-p-4">
                                                 <div id="rg_result-card">
                                                     <p id="rg_preview-title" class="f1-font-black">TTRL SEASON 1 (TRACK NAME) GP 2025</p>
@@ -926,6 +930,7 @@
         let activeTracks = []; 
         let driversCache = {};
         let allDrivers = [];
+        window.allDrivers = []; // Expose for Result Generator
         let pendingImportData = [];
         let pendingImportTracks = new Set();
         let statsChart = null;
@@ -1177,6 +1182,8 @@
                 const listFull = document.getElementById("driverListFull"); const listRes = document.getElementById("driverListReserve"); const statSel = document.getElementById("statsDriverSelect"); const statSelA = document.getElementById("statsDriverA"); const statSelB = document.getElementById("statsDriverB"); const grid = document.getElementById("editorSelectionGrid"); const editGridFull = document.getElementById("editorGridFull"); const editGridRes = document.getElementById("editorGridReserve");
                 if(listFull) listFull.innerHTML = ""; if(listRes) listRes.innerHTML = ""; if(editGridFull) editGridFull.innerHTML = ""; if(editGridRes) editGridRes.innerHTML = ""; if(statSel) statSel.innerHTML = '<option value="">-- SELECT DRIVER --</option>'; if(statSelA) statSelA.innerHTML = '<option value="">Select Driver A</option>'; if(statSelB) statSelB.innerHTML = '<option value="">Select Driver B</option>'; if(grid) grid.innerHTML = ""; allDrivers = []; snap.forEach(d => { const data = d.data(); data.id = d.id; driversCache[d.id] = data; allDrivers.push(data); });
                 allDrivers.sort((a, b) => { const idxA = TEAMS.findIndex(t => t.id === a.team); const idxB = TEAMS.findIndex(t => t.id === b.team); if (idxA !== -1 && idxB !== -1 && idxA !== idxB) return idxA - idxB; return a.name.localeCompare(b.name); });
+                window.allDrivers = allDrivers; // Update global for Result Generator Sync
+                window.dispatchEvent(new Event('ttrl_roster_updated')); // NOTIFY GENERATOR
                 allDrivers.forEach(data => {
                     const teamColor = TEAM_COLORS[data.team] || '#94a3b8'; const teamObj = TEAMS.find(t => t.id === data.team); const teamName = teamObj?.name || data.team; const teamLogo = teamObj?.logo || ""; const opt = `<option value="${data.id}">${data.name.toUpperCase()}</option>`; if(statSel) statSel.innerHTML += opt; if(statSelA) statSelA.innerHTML += opt; if(statSelB) statSelB.innerHTML += opt;
                     const onboardCard = `<div class="driver-card" style="--team-color:${teamColor}"><div style="display:flex; align-items:center; gap:12px; position:relative; z-index:2;"><input type="checkbox" class="driver-checkbox" value="${data.id}" style="transform:scale(1.2);">${teamLogo ? `<img src="${teamLogo}" class="admin-team-logo" alt="logo">` : ''}<div class="driver-info"><h4>${data.name}</h4><p>${teamName}</p></div></div><button class="icon-btn delete" onclick="window.deleteDriver('${data.id}')"><i class="fas fa-trash"></i></button></div>`;
@@ -1196,8 +1203,14 @@
             const rg_winnerTeamLogos = { "Mercedes": BASE_URL + "LOGOS/mercedes.png", "Red Bull": BASE_URL + "LOGOS/redbull.png", "Ferrari": BASE_URL + "LOGOS/ferrari.png", "McLaren": BASE_URL + "LOGOS/mclaren.png", "Alpine": BASE_URL + "LOGOS/alpine.png", "Aston Martin": BASE_URL + "LOGOS/martin.png", "Williams": BASE_URL + "LOGOS/williams.png", "Haas": BASE_URL + "LOGOS/haas.png", "Kick Sauber": BASE_URL + "LOGOS/kick_sauber.png", "Racing Bulls": BASE_URL + "LOGOS/vcarb.png", "Other": "https://placehold.co/200x80/21202e/ffffff?text=TEAM" };
             const rg_teamFullNames = { "Mercedes": "MERCEDES", "Red Bull": "RED BULL RACING HONDA RBPT", "Ferrari": "FERRARI", "McLaren": "MCLAREN MERCEDES", "Alpine": "ALPINE RENAULT", "Aston Martin": "ASTON MARTIN MERCEDES", "Williams": "WILLIAMS MERCEDES", "Haas": "HAAS FERRARI", "Kick Sauber": "KICK SAUBER FERRARI", "Racing Bulls": "RACING BULLS HONDA RBPT", "Other": "TEAM NAME" };
             const rg_csvMap = { "mercedes-amg petronas": "Mercedes", "red bull": "Red Bull", "scuderia ferrari hp": "Ferrari", "mclaren": "McLaren", "alpine": "Alpine", "aston martin": "Aston Martin", "williams": "Williams", "haas": "Haas", "kick sauber": "Kick Sauber", "visa cash app racing bulls": "Racing Bulls" };
+            
+            // Map Firebase Team IDs to Result Generator Keys
+            const rg_firebaseMap = { "mercedes": "Mercedes", "red-bull-racing": "Red Bull", "ferrari": "Ferrari", "mclaren": "McLaren", "alpine": "Alpine", "aston-martin": "Aston Martin", "williams": "Williams", "haas": "Haas", "kick-sauber": "Kick Sauber", "racing-bulls": "Racing Bulls" };
+
             const rg_initialDrivers = Array.from({ length: 20 }, (_, i) => ({ driver: 'PLAYER NAME', team: 'Other', grid: i + 1, stops: 2, bestLap: '1:11:546', time: '45:47.690', points: i < 10 ? `+${[25,18,15,12,10,8,6,4,2,1][i]}` : '0' }));
             
+            let rg_roster = []; // Stores synced drivers from Firebase
+
             // Initialization function that finds elements when they are guaranteed to exist
             const ROW_HEIGHT = 24.5;
             const coords = { pos: { x: 125 }, driver: { x: 396 }, team: { x: 1028 }, grid: { x: 1648 }, stop: { x: 1780 }, best: { x: 1985 }, time: { x: 2270 }, points: { x: 2625 } };
@@ -1209,6 +1222,7 @@
                     previewBody: document.getElementById('rg_preview-race-body'), 
                     downloadBtn: document.getElementById('rg_downloadBtn'), 
                     resetBtn: document.getElementById('rg_resetBtn'), 
+                    syncBtn: document.getElementById('rg_syncBtn'),
                     card: document.getElementById('rg_result-card'), 
                     ppDriver: document.getElementById('rg_pp_driver'), 
                     ppTeam: document.getElementById('rg_pp_team'), 
@@ -1236,9 +1250,36 @@
                 el.resetBtn.addEventListener('click', resetData);
                 el.importFile.addEventListener('change', handleFileUpload);
                 el.ppDriver.addEventListener('change', handlePoleDriverChange);
+                el.syncBtn.addEventListener('click', () => syncDriversFromMainApp(false)); 
+                
+                // AUTO-SYNC LISTENER
+                window.addEventListener('ttrl_roster_updated', () => syncDriversFromMainApp(true));
+                window.addEventListener('click', closeAllDropdowns);
+
                 document.fonts.load('900 33px "Orbitron"').catch(()=>{});
                 document.fonts.load('400 11px "Inter"').catch(()=>{});
                 
+                function syncDriversFromMainApp(silent = false) {
+                    if(window.allDrivers && window.allDrivers.length > 0) {
+                        rg_roster = window.allDrivers.map(d => ({
+                            name: d.name,
+                            teamId: d.team, 
+                            mappedTeam: rg_firebaseMap[d.team] || 'Other' 
+                        }));
+                        
+                        rg_roster.sort((a,b) => a.mappedTeam.localeCompare(b.mappedTeam) || a.name.localeCompare(b.name));
+                        
+                        for(let i=0; i<20; i++) {
+                            const teamSelect = document.querySelector(`[data-idx="${i}"][data-f="team"]`);
+                            if(teamSelect) renderDropdownOptions(i, teamSelect.value);
+                        }
+                        
+                        if(!silent) alert(`Synced ${rg_roster.length} drivers from current season.`);
+                    } else {
+                        if(!silent) alert("No drivers found in active season. Please check Dashboard.");
+                    }
+                }
+
                 function resetData() { 
                     el.inputs.innerHTML = ''; 
                     for (let i = 0; i < 20; i++) { 
@@ -1254,11 +1295,217 @@
 
                 function createRow(data, i) { 
                     const div = document.createElement('div'); 
-                    div.className = 'tw-grid tw-grid-cols-12 tw-gap-1 tw-items-center tw-bg-gray-700/50 tw-p-1 tw-rounded hover:tw-bg-gray-700 tw-transition-colors'; 
+                    // distinct row card
+                    div.className = 'tw-grid tw-grid-cols-12 tw-gap-2 tw-items-center tw-p-2 tw-rounded-lg tw-mb-2 tw-transition-all tw-shadow-sm';
+                    div.style = 'background: var(--bg-panel); border: 1px solid var(--border-dim); backdrop-filter: blur(5px);';
                     const teamOpts = Object.keys(rg_teamLogos).map(t => `<option value="${t}" ${data.team === t ? 'selected' : ''}>${t}</option>`).join(''); 
-                    div.innerHTML = `<span class="tw-col-span-1 tw-text-xs tw-text-gray-400 tw-text-center tw-font-mono">${i + 1}</span><input data-idx="${i}" data-f="driver" type="text" value="${data.driver}" class="tw-col-span-3 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-xs tw-uppercase tw-text-white tw-outline-none focus:tw-ring-1 focus:tw-ring-blue-500"><select data-idx="${i}" data-f="team" class="tw-col-span-2 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-[10px] tw-text-white tw-outline-none">${teamOpts}</select><input data-idx="${i}" data-f="grid" type="text" value="${data.grid}" class="tw-col-span-1 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-xs tw-text-center tw-text-white tw-outline-none"><input data-idx="${i}" data-f="stops" type="text" value="${data.stops}" class="tw-col-span-1 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-xs tw-text-center tw-text-white tw-outline-none"><input data-idx="${i}" data-f="time" type="text" value="${data.time}" class="tw-col-span-2 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-xs tw-text-center tw-text-white tw-outline-none tw-placeholder-gray-500" placeholder="Time"><input data-idx="${i}" data-f="bestLap" type="text" value="${data.bestLap}" class="tw-col-span-1 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-xs tw-text-center tw-text-white tw-outline-none tw-placeholder-gray-500" placeholder="Fastest"><input data-idx="${i}" data-f="points" type="text" value="${data.points}" class="tw-col-span-1 tw-bg-gray-600 tw-rounded tw-px-1 tw-py-1 tw-text-xs tw-text-center tw-font-bold tw-text-yellow-400 tw-outline-none">`; 
+                    
+                    // cleaner input styles using vars
+                    const baseInputStyle = "background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-primary);";
+                    const inputClass = "tw-w-full tw-text-xs tw-py-1.5 tw-px-2 tw-rounded focus:tw-border-blue-500 focus:tw-ring-1 focus:tw-ring-blue-500 tw-outline-none tw-text-center tw-font-mono";
+                    const textInputClass = "tw-w-full tw-text-xs tw-py-1.5 tw-px-2 tw-rounded focus:tw-border-blue-500 focus:tw-ring-1 focus:tw-ring-blue-500 tw-outline-none tw-uppercase"; // Left aligned for text
+                    const selectClass = "tw-col-span-2 tw-text-[10px] tw-py-1.5 tw-px-2 tw-rounded focus:tw-border-blue-500 tw-outline-none";
+
+                    div.innerHTML = `
+                        <span class="tw-col-span-1 tw-text-sm tw-font-bold tw-text-gray-500 tw-text-center font-mono">P${i + 1}</span>
+                        
+                        <div class="tw-col-span-3 tw-relative group">
+                            <input type="text" data-idx="${i}" data-f="driver" value="${data.driver}" 
+                                class="${textInputClass} tw-pr-7" 
+                                style="${baseInputStyle}"
+                                placeholder="Driver Name" 
+                                oninput="window.handleDriverInput(${i}, this.value)"
+                                onfocus="window.openRgDropdown(${i}, false)"
+                                onblur="setTimeout(() => window.closeRgDropdown(${i}), 200)" 
+                                autocomplete="off">
+                            <div class="tw-absolute tw-right-0 tw-top-0 tw-h-full tw-w-7 tw-flex tw-items-center tw-justify-center tw-cursor-pointer tw-text-gray-500 hover:tw-text-blue-400" onclick="window.toggleRgDropdown(${i})">
+                                <i class="fas fa-chevron-down tw-text-[10px]"></i>
+                            </div>
+                            <div id="rg_dd_${i}" class="tw-absolute tw-z-50 tw-w-full tw-rounded-md tw-mt-1 tw-max-h-48 tw-overflow-y-auto tw-hidden tw-shadow-2xl tw-flex tw-flex-col" style="background: var(--bg-header); border: 1px solid var(--border-dim); backdrop-filter: blur(10px);">
+                                <!-- Options go here -->
+                            </div>
+                        </div>
+
+                        <select data-idx="${i}" data-f="team" class="${selectClass}" style="${baseInputStyle}" onchange="handleTeamChange(${i}, this.value)">${teamOpts}</select>
+                        
+                        <input data-idx="${i}" data-f="grid" type="text" value="${data.grid}" class="tw-col-span-1 ${inputClass}" style="${baseInputStyle}">
+                        <input data-idx="${i}" data-f="stops" type="text" value="${data.stops}" class="tw-col-span-1 ${inputClass}" style="${baseInputStyle}">
+                        <input data-idx="${i}" data-f="time" type="text" value="${data.time}" class="tw-col-span-2 ${inputClass}" style="${baseInputStyle}" placeholder="Time">
+                        <input data-idx="${i}" data-f="bestLap" type="text" value="${data.bestLap}" class="tw-col-span-1 ${inputClass}" style="${baseInputStyle}" placeholder="Fastest">
+                        <input data-idx="${i}" data-f="points" type="text" value="${data.points}" class="tw-col-span-1 ${inputClass} tw-text-yellow-400 tw-font-bold" style="${baseInputStyle}">
+                    `; 
                     el.inputs.appendChild(div); 
+                    
+                    renderDropdownOptions(i, data.team);
                 }
+
+                // New Custom Dropdown Logic
+                window.renderDropdownOptions = (idx, selectedTeam) => {
+                    const dd = document.getElementById(`rg_dd_${idx}`);
+                    if(!dd) return;
+                    dd.innerHTML = ''; 
+
+                    const relevantDrivers = rg_roster.filter(d => {
+                        if (selectedTeam === 'Other') return true;
+                        return d.mappedTeam === selectedTeam || d.teamId === 'reserve';
+                    });
+
+                    if(relevantDrivers.length === 0) {
+                        dd.innerHTML = '<div class="tw-px-3 tw-py-2 tw-text-xs tw-text-gray-500 tw-italic">No drivers found</div>';
+                        return;
+                    }
+
+                    // Segregate Logic
+                    const fullTime = relevantDrivers.filter(d => d.teamId !== 'reserve');
+                    const reserves = relevantDrivers.filter(d => d.teamId === 'reserve');
+
+                    const createHeader = (title) => {
+                        const h = document.createElement('div');
+                        h.className = 'tw-px-3 tw-py-1 tw-text-[10px] tw-font-bold tw-text-gray-500 tw-uppercase tw-tracking-wider tw-border-b dd-header';
+                        h.style = "background: var(--bg-body); border-bottom: 1px solid var(--border-dim); opacity: 0.8;";
+                        h.textContent = title;
+                        return h;
+                    };
+
+                    const createItem = (d) => {
+                        const item = document.createElement('div');
+                        item.className = 'tw-px-3 tw-py-2 tw-text-xs tw-text-gray-200 hover:tw-bg-blue-600 tw-cursor-pointer tw-uppercase tw-transition-colors dd-item';
+                        item.textContent = d.name; 
+                        item.dataset.val = d.name.toUpperCase();
+                        item.onmousedown = (e) => {
+                            e.preventDefault(); 
+                            window.selectRgDriver(idx, d.name.toUpperCase());
+                        };
+                        return item;
+                    };
+
+                    if(fullTime.length > 0) {
+                        if (selectedTeam !== 'Other') dd.appendChild(createHeader('Active Roster'));
+                        else dd.appendChild(createHeader('All Active Drivers'));
+                        fullTime.forEach(d => dd.appendChild(createItem(d)));
+                    }
+
+                    if(reserves.length > 0) {
+                        dd.appendChild(createHeader('Reserve Pool'));
+                        reserves.forEach(d => dd.appendChild(createItem(d)));
+                    }
+                };
+
+                window.toggleRgDropdown = (idx) => {
+                    const dd = document.getElementById(`rg_dd_${idx}`);
+                    const input = document.querySelector(`[data-idx="${idx}"][data-f="driver"]`);
+                    if(!dd) return;
+                    
+                    // If it's hidden, open it fully (false = no filter, show all)
+                    if(dd.classList.contains('tw-hidden')) {
+                        window.openRgDropdown(idx, false);
+                        if(input) input.focus(); 
+                    } else {
+                        // If open, close it
+                        window.closeRgDropdown(idx);
+                    }
+                };
+
+                window.openRgDropdown = (idx, filterMode) => {
+                    const dd = document.getElementById(`rg_dd_${idx}`);
+                    const input = document.querySelector(`[data-idx="${idx}"][data-f="driver"]`);
+                    if(!dd) return;
+                    
+                    closeAllDropdowns();
+                    dd.classList.remove('tw-hidden');
+                    
+                    // Always reset items to visible first when opening via focus/click
+                    const items = dd.querySelectorAll('.dd-item');
+                    items.forEach(it => it.classList.remove('tw-hidden'));
+                    
+                    // Also reset headers visibility
+                    const headers = dd.querySelectorAll('.dd-header');
+                    headers.forEach(h => h.classList.remove('tw-hidden'));
+
+                    // Only filter if explicitly requested AND input has value
+                    if(filterMode && input) {
+                        window.handleDriverInput(idx, input.value);
+                    }
+                };
+
+                window.closeRgDropdown = (idx) => {
+                    const dd = document.getElementById(`rg_dd_${idx}`);
+                    if(dd) dd.classList.add('tw-hidden');
+                };
+
+                window.selectRgDriver = (idx, name) => {
+                    const input = document.querySelector(`[data-idx="${idx}"][data-f="driver"]`);
+                    if(input) {
+                        input.value = name;
+                        // Trigger logic to check team match
+                        window.handleDriverInput(idx, name); 
+                        window.closeRgDropdown(idx);
+                        updatePreview();
+                    }
+                };
+
+                function closeAllDropdowns(e) {
+                    // If click is inside a dropdown group, ignore
+                    if(e && e.target.closest('.group')) return;
+                    
+                    document.querySelectorAll('[id^="rg_dd_"]').forEach(dd => {
+                        dd.classList.add('tw-hidden');
+                    });
+                }
+
+                window.handleTeamChange = (idx, val) => {
+                    renderDropdownOptions(idx, val);
+                    updatePreview();
+                };
+
+                window.handleDriverInput = (idx, val) => {
+                    const upperVal = val.toUpperCase();
+                    
+                    // Filter Dropdown Items
+                    const dd = document.getElementById(`rg_dd_${idx}`);
+                    if(dd) {
+                        const items = dd.querySelectorAll('.dd-item');
+                        let hasVisible = false;
+                        items.forEach(it => {
+                            const txt = it.dataset.val;
+                            if(txt.includes(upperVal)) {
+                                it.classList.remove('tw-hidden');
+                                hasVisible = true;
+                            } else {
+                                it.classList.add('tw-hidden');
+                            }
+                        });
+                        
+                        // Header visibility logic: Hide header if all its children are hidden
+                        const headers = dd.querySelectorAll('.dd-header');
+                        headers.forEach(header => {
+                            let next = header.nextElementSibling;
+                            let hasVisibleChild = false;
+                            while(next && !next.classList.contains('dd-header')) {
+                                if(!next.classList.contains('tw-hidden')) {
+                                    hasVisibleChild = true;
+                                    break;
+                                }
+                                next = next.nextElementSibling;
+                            }
+                            if(hasVisibleChild) header.classList.remove('tw-hidden');
+                            else header.classList.add('tw-hidden');
+                        });
+
+                        dd.classList.remove('tw-hidden');
+                    }
+
+                    // Auto-Team Switch Logic
+                    const match = rg_roster.find(d => d.name.toUpperCase() === upperVal);
+                    if(match) {
+                        const teamSel = document.querySelector(`[data-idx="${idx}"][data-f="team"]`);
+                        if(teamSel && match.teamId !== 'reserve') {
+                            teamSel.value = match.mappedTeam;
+                            renderDropdownOptions(idx, match.mappedTeam);
+                        }
+                    }
+                    updatePreview();
+                };
 
                 function updatePreview() { 
                     el.previewTitle.textContent = `${el.leagueName.value} ${el.trackName.value}`; 
@@ -1301,14 +1548,54 @@
 
                 function handlePoleDriverChange() { const sel = el.ppDriver.value; if(sel && sel !== 'PLAYER NAME') { for(let i=0; i<20; i++) { const dVal = document.querySelector(`[data-idx="${i}"][data-f="driver"]`); if(dVal && dVal.value.toUpperCase() === sel) { el.ppTeam.value = document.querySelector(`[data-idx="${i}"][data-f="team"]`).value; el.ppTime.value = document.querySelector(`[data-idx="${i}"][data-f="bestLap"]`).value; break; } } } updatePreview(); }
                 function handleFileUpload(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (ev) => parseCSV(ev.target.result); r.readAsText(f); e.target.value = ''; }
-                function parseCSV(txt) { try { const lines = txt.trim().split(/\r?\n/); const hLine = lines.find(l => l.startsWith('"Pos."')); if(!hLine) { alert("Invalid CSV: Header 'Pos.' not found."); return; } const headers = hLine.split(',').map(h => h.trim().replace(/"/g, '')); const map = { d: headers.indexOf('Driver'), t: headers.indexOf('Team'), g: headers.indexOf('Grid'), s: headers.indexOf('Stops'), b: headers.indexOf('Best'), ti: headers.indexOf('Time'), p: headers.indexOf('Pts.') }; if(Object.values(map).includes(-1)) { alert("CSV missing required columns."); return; } const start = lines.indexOf(hLine) + 1; let count = 0; for(let i=start; i<lines.length && count<20; i++) { const l = lines[i]; if(!l || !l.trim()) continue; const v = l.split(',').map(val => val.trim().replace(/"/g, '')); if(isNaN(parseInt(v[0]))) break; const teamKey = rg_csvMap[(v[map.t]||'').toLowerCase()] || 'Other'; document.querySelector(`[data-idx="${count}"][data-f="driver"]`).value = v[map.d] || 'PLAYER NAME'; document.querySelector(`[data-idx="${count}"][data-f="team"]`).value = teamKey; document.querySelector(`[data-idx="${count}"][data-f="grid"]`).value = v[map.g] || (count+1); document.querySelector(`[data-idx="${count}"][data-f="stops"]`).value = v[map.s] || 0; document.querySelector(`[data-idx="${count}"][data-f="bestLap"]`).value = v[map.b] || ''; document.querySelector(`[data-idx="${count}"][data-f="time"]`).value = v[map.ti] || ''; document.querySelector(`[data-idx="${count}"][data-f="points"]`).value = parseInt(v[map.p]) > 0 ? `+${v[map.p]}` : '0'; count++; } for(let i=count; i<20; i++) { document.querySelector(`[data-idx="${i}"][data-f="driver"]`).value = 'PLAYER NAME'; document.querySelector(`[data-idx="${i}"][data-f="team"]`).value = 'Other'; document.querySelector(`[data-idx="${i}"][data-f="grid"]`).value = i+1; document.querySelector(`[data-idx="${i}"][data-f="stops"]`).value = 0; document.querySelector(`[data-idx="${i}"][data-f="bestLap"]`).value = ''; document.querySelector(`[data-idx="${i}"][data-f="time"]`).value = ''; document.querySelector(`[data-idx="${i}"][data-f="points"]`).value = '0'; } updatePreview(); } catch(err) { console.error(err); alert("CSV Parse Error"); } }
+                function parseCSV(txt) { 
+                    try { 
+                        const lines = txt.trim().split(/\r?\n/); 
+                        const hLine = lines.find(l => l.startsWith('"Pos."')); 
+                        if(!hLine) { alert("Invalid CSV: Header 'Pos.' not found."); return; } 
+                        const headers = hLine.split(',').map(h => h.trim().replace(/"/g, '')); 
+                        const map = { d: headers.indexOf('Driver'), t: headers.indexOf('Team'), g: headers.indexOf('Grid'), s: headers.indexOf('Stops'), b: headers.indexOf('Best'), ti: headers.indexOf('Time'), p: headers.indexOf('Pts.') }; 
+                        if(Object.values(map).includes(-1)) { alert("CSV missing required columns."); return; } 
+                        const start = lines.indexOf(hLine) + 1; 
+                        let count = 0; 
+                        for(let i=start; i<lines.length && count<20; i++) { 
+                            const l = lines[i]; 
+                            if(!l || !l.trim()) continue; 
+                            const v = l.split(',').map(val => val.trim().replace(/"/g, '')); 
+                            if(isNaN(parseInt(v[0]))) break; 
+                            const teamKey = rg_csvMap[(v[map.t]||'').toLowerCase()] || 'Other'; 
+                            
+                            document.querySelector(`[data-idx="${count}"][data-f="driver"]`).value = v[map.d] || 'PLAYER NAME'; 
+                            const teamSelect = document.querySelector(`[data-idx="${count}"][data-f="team"]`);
+                            teamSelect.value = teamKey; 
+                            
+                            renderDropdownOptions(count, teamKey);
+
+                            document.querySelector(`[data-idx="${count}"][data-f="grid"]`).value = v[map.g] || (count+1); 
+                            document.querySelector(`[data-idx="${count}"][data-f="stops"]`).value = v[map.s] || 0; 
+                            document.querySelector(`[data-idx="${count}"][data-f="bestLap"]`).value = v[map.b] || ''; 
+                            document.querySelector(`[data-idx="${count}"][data-f="time"]`).value = v[map.ti] || ''; 
+                            document.querySelector(`[data-idx="${count}"][data-f="points"]`).value = parseInt(v[map.p]) > 0 ? `+${v[map.p]}` : '0'; 
+                            count++; 
+                        } 
+                        for(let i=count; i<20; i++) { 
+                            document.querySelector(`[data-idx="${i}"][data-f="driver"]`).value = 'PLAYER NAME'; 
+                            document.querySelector(`[data-idx="${i}"][data-f="team"]`).value = 'Other'; 
+                            renderDropdownOptions(i, 'Other');
+                            document.querySelector(`[data-idx="${i}"][data-f="grid"]`).value = i+1; 
+                            document.querySelector(`[data-idx="${i}"][data-f="stops"]`).value = 0; 
+                            document.querySelector(`[data-idx="${i}"][data-f="bestLap"]`).value = ''; 
+                            document.querySelector(`[data-idx="${i}"][data-f="time"]`).value = ''; 
+                            document.querySelector(`[data-idx="${i}"][data-f="points"]`).value = '0'; 
+                        } 
+                        updatePreview(); 
+                    } catch(err) { console.error(err); alert("CSV Parse Error"); } 
+                }
                 async function downloadImage() { el.downloadBtn.textContent = 'Processing...'; el.downloadBtn.disabled = true; try { await document.fonts.ready; const imgs = Array.from(el.card.querySelectorAll('img')); await Promise.all(imgs.map(img => { if(img.complete) return Promise.resolve(); return new Promise(r => { img.onload=r; img.onerror=r; }); })); await new Promise(r => setTimeout(r, 200)); const canvas = await html2canvas(el.card, { scale: 2, backgroundColor: null, useCORS: true, logging: false }); const link = document.createElement('a'); link.download = `Results_${el.trackName.value.replace(/[^a-z0-9]/gi, '_')}.png`; link.href = canvas.toDataURL("image/png"); document.body.appendChild(link); link.click(); document.body.removeChild(link); } catch(err) { console.error(err); alert("Image Generation Failed"); } finally { el.downloadBtn.innerHTML = '<i class="fas fa-download tw-mr-2"></i>Download'; el.downloadBtn.disabled = false; } }
 
-                // Setup Logic
                 resetData();
             }
 
-            // Init call with retry safety
             if(document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
