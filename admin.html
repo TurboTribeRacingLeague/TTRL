@@ -45,14 +45,14 @@
             
             /* Accents remain bright for contrast */
             --accent-cyan: #23a2f6;    
-            --accent-red: #ff512f;     
+            --accent-red: #ff512f;      
             --accent-green: #10b981; 
             --accent-yellow: #f09819; 
             --accent-purple: #8b5cf6; 
             
             --text-primary: #ffffff;    
             --text-secondary: #e5e5e5; 
-            --text-muted: #a0a0a0;       
+            --text-muted: #a0a0a0;        
             
             --font-display: 'Poppins', sans-serif; 
             --font-ui: 'Poppins', sans-serif;
@@ -82,7 +82,7 @@
             --input-bg: rgba(255, 255, 255, 0.5);
 
             --accent-cyan: #0284c7;    
-            --accent-red: #dc2626;     
+            --accent-red: #dc2626;      
             --accent-green: #059669; 
             --accent-yellow: #d97706; 
             --accent-purple: #7c3aed; 
@@ -600,7 +600,7 @@
                 <a class="nav-btn" onclick="window.switchTab('profile')"><i class="fas fa-id-badge"></i> <span>PROFILE</span></a>
                 <a class="nav-btn" onclick="window.switchTab('settings')"><i class="fas fa-sliders-h"></i> <span>SETTINGS</span></a>
             </div>
-            <div class="user-panel"><div class="user-panel-row"><div class="user-name" id="userName">OPERATOR</div><div class="user-role">ADMIN</div></div><button class="btn btn-danger" onclick="window.logout()" style="width: 100%; justify-content: center; font-size: 0.75rem;"><i class="fas fa-power-off"></i> <span>DISCONNECT</span></button></div>
+            <div class="user-panel"><div class="user-panel-row"><div class="user-name" id="userName">OPERATOR</div><div class="user-role" id="userRoleBadge">ADMIN</div></div><button class="btn btn-danger" onclick="window.logout()" style="width: 100%; justify-content: center; font-size: 0.75rem;"><i class="fas fa-power-off"></i> <span>DISCONNECT</span></button></div>
         </nav>
 
         <div class="main-wrapper">
@@ -744,7 +744,7 @@
                 <div id="live-view" class="section"><div class="dashboard-grid-full"><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-cyan);"><i class="fas fa-trophy"></i> DRIVERS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>DRIVER</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveDriversBody"></tbody></table></div></div><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-red);"><i class="fas fa-wrench"></i> CONSTRUCTORS CHAMPIONSHIP</div></div><div class="panel-body"><table class="tech-table"><thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="liveConstructorsBody"></tbody></table></div></div></div></div>
                 <div id="driver-stats" class="section"><div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-chart-line"></i> PERFORMANCE ANALYTICS</div></div><div class="panel-body"><div style="display:flex; gap:15px; margin-bottom: 25px; flex-wrap:wrap;"><select id="statsMode" class="form-control" style="width:auto; font-weight:bold;" onchange="window.toggleStatsMode()"><option value="individual">INDIVIDUAL ANALYSIS</option><option value="1v1">DRIVER HEAD-TO-HEAD</option><option value="team">TEAM BATTLE</option></select><div id="sel-individual" class="stats-selector"><select id="statsDriverSelect" class="form-control" onchange="window.renderStats()"></select></div><div id="sel-1v1" class="stats-selector" style="display:none; gap:10px;"><select id="statsDriverA" class="form-control" onchange="window.renderStats()"></select><span style="align-self:center; font-weight:800; color:var(--text-muted);">VS</span><select id="statsDriverB" class="form-control" onchange="window.renderStats()"></select></div><div id="sel-team" class="stats-selector" style="display:none; gap:10px;"><select id="statsTeamA" class="form-control" onchange="window.renderStats()"></select><span style="align-self:center; font-weight:800; color:var(--text-muted);">VS</span><select id="statsTeamB" class="form-control" onchange="window.renderStats()"></select></div></div><div id="statsContent"><div id="statsDisplay" style="display:none;"><div style="display:flex; justify-content:space-between; align-items: flex-end; margin-bottom: 32px;"><div><h1 id="statsDriverName" style="font-family: var(--font-display); font-size: 2.5rem; margin:0; font-weight:800; color:var(--text-primary);">NAME</h1><div id="statsTeamName" style="color: var(--accent-cyan); font-family: var(--font-data); font-weight:600;">TEAM</div></div><div class="stat-value" id="statPoints" style="color: var(--accent-yellow);">0 <span style="font-size: 1.2rem; color: var(--text-secondary);">PTS</span></div></div><div class="dashboard-grid-full" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;"><div class="stat-card" style="padding: 16px;"><div class="stat-label">WINS</div><div class="stat-value" id="statWins">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">PODIUMS</div><div class="stat-value" id="statPodiums">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">AVG FINISH</div><div class="stat-value" id="statAvg">0</div></div><div class="stat-card" style="padding: 16px;"><div class="stat-label">CONSISTENCY</div><div class="stat-value" id="statConsistency">0</div></div></div><div class="dashboard-grid-full" style="grid-template-columns: 1fr 1fr; margin-bottom: 32px;"><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">CUMULATIVE POINTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="pointsChart"></canvas></div></div></div><div class="panel" style="margin:0; min-height: 350px;"><div class="panel-header"><div class="panel-title" style="font-size: 0.95rem;">RACE RESULTS</div></div><div class="panel-body"><div style="position: relative; height: 300px; width: 100%;"><canvas id="barChart"></canvas></div></div></div></div><div class="panel-title" style="margin-bottom:15px;">SEASON HISTORY</div><table class="tech-table"><thead><tr><th>TRACK</th><th>POS</th><th>TEAM</th><th style="text-align:right;">PTS</th></tr></thead><tbody id="statsHistoryBody"></tbody></table></div><div id="comparisonDisplay" style="display:none;"></div><div id="emptyStats" style="text-align:center; color:var(--text-muted); padding:40px; background: var(--bg-panel); border-radius: 8px;">SELECT DATA TO ANALYZE</div></div></div></div></div>
                 <div id="import-preview" class="section"><div class="panel"><div class="panel-header"><div class="panel-title" style="color: var(--accent-green);">IMPORT PREVIEW</div></div><div class="panel-body"><div style="margin-bottom: 24px; font-family: var(--font-data);">DETECTED TRACKS: <span id="detectedTracksList" style="color: var(--accent-green); font-weight:700;"></span></div><div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-dim); margin-bottom: 24px;"><table class="tech-table"><thead><tr><th>DRIVER</th><th>TEAM</th><th>PTS</th><th>STATUS</th></tr></thead><tbody id="importTableBody"></tbody></table></div><div class="action-cluster" style="justify-content: flex-end;"><button class="btn" onclick="window.cancelImport()">CANCEL</button><button class="btn btn-success" onclick="window.commitImport()">CONFIRM IMPORT</button></div></div></div></div>
-                <div id="profile" class="section"><div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-id-badge"></i> OPERATOR PROFILE</div></div><div class="panel-body"><div style="display:flex; align-items:center; gap:20px; margin-bottom:30px;"><div style="width:80px; height:80px; background:var(--accent-cyan); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#fff;"><i class="fas fa-user"></i></div><div><h2 style="margin:0; font-size:1.5rem;" id="profileName">OPERATOR</h2><div style="color:var(--text-secondary);" id="profileEmail">loading...</div><span class="user-role" style="margin-top:8px; display:inline-block;">ADMINISTRATOR</span></div></div><div style="max-width:500px;"><div class="input-group"><label class="input-label">Display Name</label><input type="text" class="form-control" id="updateDisplayName"></div><button class="btn btn-primary" onclick="window.updateProfile()">UPDATE PROFILE</button></div></div></div></div>
+                <div id="profile" class="section"><div class="panel"><div class="panel-header"><div class="panel-title"><i class="fas fa-id-badge"></i> OPERATOR PROFILE</div></div><div class="panel-body"><div style="display:flex; align-items:center; gap:20px; margin-bottom:30px;"><div style="width:80px; height:80px; background:var(--accent-cyan); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#fff;"><i class="fas fa-user"></i></div><div><h2 style="margin:0; font-size:1.5rem;" id="profileName">OPERATOR</h2><div style="color:var(--text-secondary);" id="profileEmail">loading...</div><span class="user-role" style="margin-top:8px; display:inline-block;" id="profileRoleBadge">ADMINISTRATOR</span></div></div><div style="max-width:500px;"><div class="input-group"><label class="input-label">Display Name</label><input type="text" class="form-control" id="updateDisplayName"></div><button class="btn btn-primary" onclick="window.updateProfile()">UPDATE PROFILE</button></div></div></div></div>
 
                 <!-- ADDED RESULT GENERATOR SECTION -->
                 <div id="result-generator" class="section">
@@ -940,20 +940,54 @@
             if (user) {
                 try {
                     const emailKey = user.email.toLowerCase();
-                    const adminDocRef = doc(db, "Admin", emailKey);
-                    const docSnap = await getDoc(adminDocRef); 
-                    if (docSnap.exists() && docSnap.data().role === "Admin") {
+                    
+                    // --- MODIFIED PERMISSION LOGIC ---
+                    // Check Admin Collection
+                    const adminRef = doc(db, "Admin", emailKey);
+                    const stewardRef = doc(db, "Driver_permissions", emailKey);
+
+                    // Fetch both permissions in parallel
+                    const [adminSnap, stewardSnap] = await Promise.all([
+                        getDoc(adminRef),
+                        getDoc(stewardRef)
+                    ]);
+
+                    const isAdmin = adminSnap.exists() && adminSnap.data().admin === true;
+                    const isSteward = stewardSnap.exists() && stewardSnap.data().steward === true;
+
+                    if (isAdmin || isSteward) {
+                        const userRole = isAdmin ? "ADMIN" : "STEWARD";
+
                         document.getElementById("login-screen").style.display = "none";
                         document.getElementById("main-interface").style.display = "flex";
                         setTimeout(() => document.getElementById("main-interface").style.opacity = "1", 50);
+                        
+                        // Set UI Text
                         document.getElementById("userName").innerText = (user.displayName || user.email.split('@')[0]).toUpperCase(); 
                         document.getElementById('profileEmail').innerText = user.email;
                         document.getElementById('profileName').innerText = user.displayName || 'OPERATOR';
                         document.getElementById('updateDisplayName').value = user.displayName || '';
+                        
+                        // Set Role Badges
+                        document.getElementById("userRoleBadge").innerText = userRole;
+                        document.getElementById("profileRoleBadge").innerText = userRole + "ISTRATOR"; // e.g. ADMINISTRATOR or STEWARDISTRATOR (fix below)
+                        if(isSteward && !isAdmin) document.getElementById("profileRoleBadge").innerText = "RACE STEWARD";
+
                         initApp();
-                    } else { throw new Error("Insufficient Permissions"); }
-                } catch (error) { signOut(auth).then(() => { document.getElementById("login-msg").innerText = "ACCESS DENIED"; document.getElementById("login-screen").style.display = "flex"; }); }
-            } else { document.getElementById("login-screen").style.display = "flex"; document.getElementById("main-interface").style.display = "none"; }
+                    } else { 
+                        throw new Error("Insufficient Permissions"); 
+                    }
+                } catch (error) { 
+                    console.error("Auth Error:", error);
+                    signOut(auth).then(() => { 
+                        document.getElementById("login-msg").innerText = "ACCESS DENIED"; 
+                        document.getElementById("login-screen").style.display = "flex"; 
+                    }); 
+                }
+            } else { 
+                document.getElementById("login-screen").style.display = "flex"; 
+                document.getElementById("main-interface").style.display = "none"; 
+            }
         });
 
         window.initApp = async function() {
