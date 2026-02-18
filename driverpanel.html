@@ -1,62 +1,699 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTRL Race Control</title>
-    
-    <!-- Tailwind CSS -->
+    <title>TTRL | Driver Portal</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&family=JetBrains+Mono:wght@500;700&family=Orbitron:wght@900&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Babel for JSX compilation in browser -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        tailwind.config = {
+            prefix: 'tw-',
+            corePlugins: { preflight: false }
+        }
+    </script>
 
     <style>
-        /* Custom scrollbar for dark theme */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* --- COPY OF ADMIN STYLES FOR CONSISTENCY --- */
+        :root {
+            --bg-body: #0f0c29;
+            --bg-panel: rgba(30, 35, 50, 0.65);
+            --bg-card: rgba(30, 35, 50, 0.65);
+            --bg-header: rgba(20, 25, 40, 0.7);
+            --sidebar-bg: rgba(15, 20, 35, 0.7);
+
+            --sidebar-text: #e2e8f0;
+            --sidebar-text-active: #ffffff;
+
+            --border-dim: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.15);
+
+            --hover-bg: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(0, 0, 0, 0.3);
+
+            --accent-cyan: #38bdf8;
+            --accent-red: #fb7185;
+            --accent-green: #34d399;
+            --accent-yellow: #fbbf24;
+            --accent-purple: #a78bfa;
+
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            --font-display: 'Poppins', sans-serif;
+            --font-ui: 'Poppins', sans-serif;
+            --font-data: 'JetBrains Mono', monospace;
+
+            --sidebar-width: 260px;
+            --sidebar-width-collapsed: 72px;
+            --header-height: 80px;
+            --shadow-md: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --glass-blur: blur(16px);
         }
-        ::-webkit-scrollbar-track {
-            background: #18181b; 
+
+        [data-theme="light"] {
+            --bg-body: #f0f4f8;
+            --bg-panel: rgba(255, 255, 255, 0.65);
+            --bg-card: rgba(255, 255, 255, 0.5);
+            --bg-header: rgba(255, 255, 255, 0.75);
+            --sidebar-bg: rgba(255, 255, 255, 0.75);
+            --sidebar-text: #475569;
+            --sidebar-text-active: #1e293b;
+            --border-dim: rgba(0, 0, 0, 0.05);
+            --border-light: rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.03);
+            --input-bg: rgba(255, 255, 255, 0.4);
+            --accent-cyan: #0284c7;
+            --accent-red: #dc2626;
+            --accent-green: #059669;
+            --accent-yellow: #d97706;
+            --accent-purple: #7c3aed;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --glass-blur: blur(20px);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #3f3f46; 
-            border-radius: 4px;
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+            margin: 0;
+            padding: 0;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #52525b; 
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+        }
+
+        /* Utility Classes */
+        .btn {
+            background: var(--hover-bg);
+            border: 1px solid var(--border-dim);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: rgba(35, 162, 246, 0.4);
+            border-color: var(--accent-cyan);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: rgba(35, 162, 246, 0.6);
+            box-shadow: 0 0 10px rgba(35, 162, 246, 0.4);
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-dim);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background: var(--bg-header);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-dim);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            border-radius: 5px;
+            font-family: var(--font-ui);
+        }
+
+        .form-control:focus {
+            border-color: var(--border-light);
+            background: var(--hover-bg);
+        }
+
+        /* Layout */
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--border-dim);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .top-bar {
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border-dim);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: var(--bg-header);
+            backdrop-filter: var(--glass-blur);
+            z-index: 40;
+        }
+
+        .workspace {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        /* Nav */
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            margin: 4px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: var(--hover-bg);
+            color: var(--sidebar-text-active);
+        }
+
+        .nav-btn.active {
+            background: rgba(35, 162, 246, 0.3);
+            color: var(--sidebar-text-active);
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .nav-btn i {
+            width: 24px;
+            margin-right: 12px;
+            text-align: center;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: var(--bg-body);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Section Visibility */
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent-green);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 10000;
+        }
+
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
-<body class="bg-zinc-950 text-white h-screen overflow-hidden">
-    <div id="root" class="h-full"></div>
 
-    <script type="text/babel" data-type="module">
-        // 1. Imports via ESM (Robust dependency management)
-        import React, { useState, useEffect, useRef } from "https://esm.sh/react@18.2.0";
-        import ReactDOM from "https://esm.sh/react-dom@18.2.0/client";
-        
-        // Import Lucide Icons directly
-        import { 
-            Trophy, Flag, AlertCircle, MessageSquare, User, Users, 
-            LayoutDashboard, Gavel, CheckCircle, XCircle, Send, 
-            ExternalLink, Shield, Plus, History, LogOut, Database, 
-            RefreshCw, Settings, Save, Lock, Mail, Key, Chrome, AlertTriangle, Info
-        } from "https://esm.sh/lucide-react@0.263.1";
+<body>
 
-        // Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, collection, doc, setDoc, addDoc, updateDoc, 
-            getDoc, onSnapshot, query, serverTimestamp 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { 
-            getAuth, onAuthStateChanged, 
-            signInWithCustomToken, GoogleAuthProvider, signInWithPopup, signOut,
-            signInWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="panel"
+            style="width: 420px; padding: 40px; text-align: center; border: 1px solid var(--accent-cyan);">
+            <h1 style="font-family: var(--font-display); margin-bottom: 10px; font-size: 2rem;">DRIVER PORTAL</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">TTRL OFFICIAL ACCESS</p>
 
-        // 2. Firebase Configuration
+            <!-- EMAIL / PASSWORD LOGIN -->
+            <input type="email" id="loginEmail" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
+            <input type="password" id="loginPassword" class="form-control" placeholder="Password"
+                style="margin-bottom: 15px;" onkeypress="if(event.key==='Enter') window.loginManual()">
+            <button onclick="window.loginManual()" class="btn btn-primary"
+                style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem; margin-bottom: 15px;">
+                <i class="fas fa-sign-in-alt"></i> SIGN IN
+            </button>
+
+            <!-- DIVIDER -->
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <div style="flex: 1; height: 1px; background: var(--border-dim);"></div>
+                <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">OR</span>
+                <div style="flex: 1; height: 1px; background: var(--border-dim);"></div>
+            </div>
+
+            <!-- GOOGLE LOGIN -->
+            <button onclick="window.loginWithGoogle()" class="btn"
+                style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem;">
+                <i class="fab fa-google"></i> SIGN IN WITH GOOGLE
+            </button>
+
+            <p id="login-msg" style="margin-top: 20px; color: var(--accent-red); font-size: 0.9rem; font-weight: 600;">
+            </p>
+        </div>
+    </div>
+
+    <!-- ONBOARDING MODAL -->
+    <div id="onboarding-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center;">
+        <div class="panel" style="width: 500px; border: 1px solid var(--accent-yellow);">
+            <div class="panel-header">
+                <div class="panel-title"><i class="fas fa-id-card"></i> LINK YOUR DRIVER PROFILE</div>
+            </div>
+            <div class="panel-body">
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Welcome! To access the portal, please select your TTRL Driver Identity.
+                    <br><small style="color: var(--accent-red);">Note: This can only be set once.</small>
+                </p>
+
+                <label class="input-label"
+                    style="display: block; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">SELECT
+                    SEASON</label>
+                <select id="onboardSeason" class="form-control" style="margin-bottom: 15px;"
+                    onchange="loadOnboardDrivers()">
+                    <!-- Populated by JS -->
+                </select>
+
+                <label class="input-label"
+                    style="display: block; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">SELECT
+                    DRIVER</label>
+                <select id="onboardDriver" class="form-control" style="margin-bottom: 25px;">
+                    <option value="">-- LOADING --</option>
+                </select>
+
+                <button onclick="window.completeOnboarding()" class="btn btn-primary" style="width: 100%;">CONFIRM
+                    IDENTITY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div class="app-layout" id="main-interface" style="display: none;">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div
+                style="height: var(--header-height); display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--border-dim);">
+                <span style="font-family: var(--font-display); font-weight: 600; font-size: 1.4rem;">TTRL <span
+                        style="color: var(--accent-cyan)">DRIVER</span></span>
+            </div>
+
+            <div style="padding: 20px 0; flex: 1;">
+                <div class="nav-btn active" onclick="switchTab('dashboard')"><i class="fas fa-home"></i>
+                    <span>DASHBOARD</span>
+                </div>
+                <div class="nav-btn" onclick="switchTab('standings')"><i class="fas fa-list-ol"></i>
+                    <span>STANDINGS</span>
+                </div>
+                <div class="nav-btn" onclick="switchTab('stewards')"><i class="fas fa-gavel"></i>
+                    <span>STEWARDING</span>
+                </div>
+            </div>
+
+            <!-- User Footer -->
+            <div style="padding: 20px; background: var(--hover-bg); border-top: 1px solid var(--border-dim);">
+                <div style="font-weight: 600; font-size: 0.9rem;" id="navUserName">USER</div>
+                <div style="font-size: 0.75rem; color: var(--accent-cyan);" id="navUserRole">DRIVER</div>
+                <div onclick="window.logout()"
+                    style="margin-top: 10px; cursor: pointer; color: var(--accent-red); font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-sign-out-alt"></i> LOGOUT
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-wrapper">
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <div style="font-family: var(--font-data); color: var(--text-secondary); font-size: 0.9rem;"
+                    id="topDate"></div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <span id="seasonBadge"
+                        style="background: var(--hover-bg); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; border: 1px solid var(--border-dim);">SEASON
+                        ?</span>
+                </div>
+            </div>
+
+            <!-- WORKSPACE -->
+            <div class="workspace">
+
+                <!-- DASHBOARD SECTION -->
+                <div id="dashboard" class="section active">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="font-family: var(--font-display);">WELCOME BACK, <span id="dashDriverName"
+                                style="color: var(--accent-cyan)">DRIVER</span></h2>
+                    </div>
+
+                    <!-- STAT CARDS -->
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div class="panel" style="padding: 20px; margin: 0; align-items: center; text-align: center;">
+                            <div
+                                style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px;">
+                                CHAMPIONSHIP PTS</div>
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent-cyan);"
+                                id="dashPoints">0</div>
+                        </div>
+                        <div class="panel" style="padding: 20px; margin: 0; align-items: center; text-align: center;">
+                            <div
+                                style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px;">
+                                CURRENT RANK</div>
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);" id="dashRank">
+                                -</div>
+                        </div>
+                        <div class="panel" style="padding: 20px; margin: 0; align-items: center; text-align: center;">
+                            <div
+                                style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px;">
+                                TEAM</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-top: 10px;"
+                                id="dashTeam">NO TEAM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STANDINGS SECTION -->
+                <div id="standings" class="section">
+                    <h2 style="font-family: var(--font-display); margin-bottom: 20px;">CHAMPIONSHIP STANDINGS</h2>
+                    <div class="panel">
+                        <div class="panel-body">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr
+                                        style="text-align: left; border-bottom: 1px solid var(--border-dim); color: var(--text-muted); font-size: 0.8rem;">
+                                        <th style="padding: 10px;">POS</th>
+                                        <th style="padding: 10px;">DRIVER</th>
+                                        <th style="padding: 10px;">TEAM</th>
+                                        <th style="padding: 10px; text-align: right;">PTS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="standingsTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEWARDING SECTION -->
+                <div id="stewards" class="section">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="font-family: var(--font-display);">RACE CONTROL & INCIDENTS</h2>
+                        <button class="btn btn-primary" onclick="window.openNewTicketModal()"><i
+                                class="fas fa-plus"></i> NEW REPORT</button>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; height: calc(100vh - 200px);">
+                        <!-- TICKET LIST -->
+                        <div class="panel" style="width: 350px; display: flex; flex-direction: column;">
+                            <div class="panel-header">
+                                <div class="panel-title">MY TICKETS</div>
+                            </div>
+                            <div class="panel-body" style="padding: 10px; flex: 1; overflow-y: auto;" id="ticketList">
+                                <!-- Tickets Here -->
+                                <div style="text-align: center; color: var(--text-muted); padding: 20px;">LOADING...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TICKET DETAIL -->
+                        <div class="panel" style="flex: 1; display: none; flex-direction: column;"
+                            id="ticketDetailPanel">
+                            <div class="panel-header" style="justify-content: space-between;">
+                                <div class="panel-title" id="ticketTitle">TICKET #123</div>
+                                <div style="display: flex; gap: 10px;">
+                                    <span id="ticketStatusBadge"
+                                        style="padding: 4px 8px; border-radius: 4px; background: var(--accent-yellow); color: #000; font-weight: 700; font-size: 0.8rem;">OPEN</span>
+                                    <button class="btn btn-danger" id="closeTicketBtn" style="display: none;"
+                                        onclick="window.openResolutionModal()">CLOSE TICKET</button>
+                                </div>
+                            </div>
+
+                            <!-- Ticket Info -->
+                            <div
+                                style="padding: 16px; border-bottom: 1px solid var(--border-dim); background: var(--hover-bg);">
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+                                    <div><span style="color: var(--text-muted);">REPORTER:</span> <span
+                                            id="ticketReporter" style="font-weight: 600;">-</span></div>
+                                    <div><span style="color: var(--text-muted);">REPORTED:</span> <span
+                                            id="ticketReported" style="font-weight: 600;">-</span></div>
+                                    <div><span style="color: var(--text-muted);">SESSION:</span> <span
+                                            id="ticketSession" style="font-weight: 600;">-</span></div>
+                                    <div><span style="color: var(--text-muted);">LAP:</span> <span id="ticketLap"
+                                            style="font-weight: 600;">-</span></div>
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <span style="color: var(--text-muted); font-size: 0.9rem;">EVIDENCE:</span>
+                                    <a id="ticketEvidence" href="#" target="_blank"
+                                        style="color: var(--accent-cyan); text-decoration: underline; font-size: 0.9rem;">LINK</a>
+                                </div>
+                            </div>
+
+                            <!-- Chat Area -->
+                            <div id="ticketChatArea"
+                                style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                                <!-- Messages -->
+                            </div>
+
+                            <!-- Chat Input -->
+                            <div
+                                style="padding: 16px; border-top: 1px solid var(--border-dim); background: var(--hover-bg); display: flex; gap: 10px;">
+                                <input type="text" id="chatInput" class="form-control" placeholder="Type a message..."
+                                    onkeypress="if(event.key==='Enter') window.sendMessage()">
+                                <button class="btn btn-primary" onclick="window.sendMessage()"><i
+                                        class="fas fa-paper-plane"></i></button>
+                            </div>
+
+                            <!-- Steward Actions -->
+                            <div id="stewardActions"
+                                style="padding: 10px 16px; border-top: 1px solid var(--border-dim); display: none; justify-content: flex-end;">
+                                <button class="btn" style="font-size: 0.8rem;" onclick="window.stewardAddDriver()"><i
+                                        class="fas fa-user-plus"></i> ADD ACCUSED DRIVER</button>
+                            </div>
+                        </div>
+
+                        <!-- NO SELECTION PLACEHOLDER -->
+                        <div class="panel"
+                            style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted);"
+                            id="noTicketSelected">
+                            SELECT A TICKET TO VIEW
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW TICKET MODAL -->
+    <div id="new-ticket-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center;">
+        <div class="panel" style="width: 500px; border: 1px solid var(--accent-cyan);">
+            <div class="panel-header">
+                <div class="panel-title">FILE NEW INCIDENT</div>
+                <button onclick="document.getElementById('new-ticket-modal').style.display='none'"
+                    style="background:none; border:none; color:var(--text-primary); cursor:pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div class="panel-body">
+                <label class="input-label">DRIVER INVOLVED</label>
+                <select id="nt_reportedDriver" class="form-control input-group">
+                    <option value="">LOADING...</option>
+                </select>
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label class="input-label">SESSION (e.g. R4 Bahrain)</label>
+                        <input type="text" id="nt_session" class="form-control input-group" placeholder="Race Name">
+                    </div>
+                    <div style="width: 100px;">
+                        <label class="input-label">LAP</label>
+                        <input type="text" id="nt_lap" class="form-control input-group" placeholder="#">
+                    </div>
+                </div>
+
+                <label class="input-label">DESCRIPTION</label>
+                <textarea id="nt_description" class="form-control input-group" rows="3"
+                    placeholder="What happened?"></textarea>
+
+                <label class="input-label">EVIDENCE LINK (Twitch/YouTube)</label>
+                <input type="text" id="nt_evidence" class="form-control input-group" placeholder="https://...">
+
+                <button onclick="window.createTicket()" class="btn btn-primary" style="width: 100%;">SUBMIT
+                    REPORT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESOLUTION MODAL -->
+    <div id="resolution-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center;">
+        <div class="panel" style="width: 400px; border: 1px solid var(--accent-red);">
+            <div class="panel-header">
+                <div class="panel-title">CLOSE TICKET</div><button
+                    onclick="document.getElementById('resolution-modal').style.display='none'"
+                    style="background:none; border:none; color:#fff; cursor:pointer;">X</button>
+            </div>
+            <div class="panel-body">
+                <label class="input-label">OUTCOME / PENALTY</label>
+                <select id="res_outcome" class="form-control input-group">
+                    <option value="No Action">No Action</option>
+                    <option value="Warning">Warning</option>
+                    <option value="5s Penalty">5s Time Penalty</option>
+                    <option value="10s Penalty">10s Time Penalty</option>
+                    <option value="Grid Drop">Grid Drop (Next Race)</option>
+                    <option value="DSQ">Disqualification</option>
+                    <option value="Ban">Race Ban</option>
+                </select>
+
+                <label class="input-label">STEWARD NOTES</label>
+                <textarea id="res_notes" class="form-control input-group" rows="3"></textarea>
+
+                <button onclick="window.confirmCloseTicket()" class="btn btn-danger" style="width: 100%;">APPLY DECISION
+                    & CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <!-- SCRIPTS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, addDoc, getDocs, onSnapshot, query, where, orderBy, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyApUD33ao9DfFa8IAfA2qby3IFKhLtcNFU",
             authDomain: "ttrl-9f3ef.firebaseapp.com",
@@ -66,496 +703,466 @@
             appId: "1:51144639440:web:8a027b773bc2cddefe2fd5"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 3. React Components
-        const Card = ({ children, className = "" }) => (
-            <div className={`bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden shadow-sm ${className}`}>
-                {children}
-            </div>
-        );
+        // Global State
+        let currentUser = null;
+        let userProfile = null; // { role, driverId, seasonId }
+        let currentSeasonId = "season_1"; // Default, will sync from profile
+        let allDriversCache = []; // For dropdowns
+        let currentTicketId = null;
 
-        const Badge = ({ status }) => {
-            const styles = {
-                Open: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-                Investigating: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-                Closed: "bg-green-500/20 text-green-400 border-green-500/30",
-            };
-            return <span className={`px-2 py-1 rounded-full text-xs font-medium border ${styles[status] || styles.Open}`}>{status}</span>;
+        // AUTH & INIT
+        window.loginWithGoogle = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(e => {
+            console.error(e);
+            document.getElementById('login-msg').innerText = e.message;
+        });
+        window.loginManual = () => {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+            if (!email || !pass) { document.getElementById('login-msg').innerText = 'Enter email and password'; return; }
+            document.getElementById('login-msg').innerText = 'SIGNING IN...';
+            signInWithEmailAndPassword(auth, email, pass).catch(e => {
+                console.error(e);
+                document.getElementById('login-msg').innerText = e.code === 'auth/invalid-credential' ? 'INVALID EMAIL OR PASSWORD' : e.message;
+            });
         };
+        window.logout = () => signOut(auth).then(() => window.location.reload());
 
-        const SidebarBtn = ({ icon: Icon, label, active, onClick }) => (
-            <button onClick={onClick} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'}`}>
-                <Icon className="h-5 w-5" /> <span>{label}</span>
-            </button>
-        );
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                // Check for existing profile in 'profiles' collection
+                const profileRef = doc(db, "profiles", user.uid);
+                const profileSnap = await getDoc(profileRef);
 
-        // 4. Main Application Component
-        function RacingApp() {
-            const [user, setUser] = useState(null); 
-            const [profile, setProfile] = useState(null); 
-            const [role, setRole] = useState('guest'); 
-            
-            const [view, setView] = useState('loading');
-            const [globalError, setGlobalError] = useState(null); 
+                // ALSO FETCH ADMIN STATUS TO OVERRIDE PROFILE ROLE
+                // (In case profile says 'driver' but they are actually admin in Admin collection)
+                const adminRef = doc(db, "Admin", user.email.toLowerCase());
+                const adminSnap = await getDoc(adminRef);
+                const isAdmin = adminSnap.exists() && adminSnap.data().admin === true;
 
-            const [drivers, setDrivers] = useState([]);
-            const [teams, setTeams] = useState([]);
-            const [tickets, setTickets] = useState([]);
-            
-            const [authMode, setAuthMode] = useState('login');
-            const [authForm, setAuthForm] = useState({ email: '', password: '' });
-            const [authError, setAuthError] = useState(null);
+                const stewardRef = doc(db, "Driver_permissions", user.email.toLowerCase());
+                const stewardSnap = await getDoc(stewardRef);
+                const isSteward = stewardSnap.exists() && stewardSnap.data().steward === true;
 
-            const [onboardData, setOnboardData] = useState({ name: '', steamId: '', eaId: '' });
-            const [activeTicketId, setActiveTicketId] = useState(null);
-            const [newTicket, setNewTicket] = useState({ accusedId: '', session: 'Race', lap: '', description: '', evidence: '' });
-            const [chatMessage, setChatMessage] = useState("");
-            const messagesEndRef = useRef(null);
+                if (profileSnap.exists()) {
+                    userProfile = profileSnap.data();
+                    // Override role if needed
+                    if (isAdmin) userProfile.role = "admin";
+                    else if (isSteward) userProfile.role = "steward";
 
-            useEffect(() => {
-                const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-                    if (firebaseUser) {
-                        setUser(firebaseUser);
-                        await checkUserProfile(firebaseUser);
-                    } else {
-                        setUser(null);
-                        setView('login');
-                    }
-                });
-                return () => unsubscribe();
-            }, []);
-
-            const checkUserProfile = async (firebaseUser) => {
-                try {
-                    const email = firebaseUser.email;
-                    if (!email) { setView('login'); return; }
-
-                    let assignedRole = 'driver';
-                    
-                    try {
-                        const adminSnap = await getDoc(doc(db, 'Admin', email));
-                        if (adminSnap.exists() && adminSnap.data().admin === true) {
-                            assignedRole = 'steward';
-                        }
-                    } catch (e) { console.log("Not admin check skipped"); }
-
-                    if (assignedRole !== 'steward') {
-                        try {
-                            const permSnap = await getDoc(doc(db, 'Driver_permissions', email));
-                            if (permSnap.exists() && permSnap.data().steward === true) {
-                                assignedRole = 'steward';
-                            }
-                        } catch (e) { console.log("Not steward check skipped"); }
-                    }
-                    setRole(assignedRole);
-
-                    const profileRef = doc(db, 'profiles', email);
-                    const profileSnap = await getDoc(profileRef);
-
-                    if (profileSnap.exists()) {
-                        setProfile(profileSnap.data());
-                        setView('dashboard');
-                    } else {
-                        setView('onboarding');
-                    }
-                } catch (error) {
-                    console.error("Profile check failed:", error);
-                    if (error.code === 'permission-denied') {
-                        setGlobalError("Missing Permissions: Please update your Firestore Rules to allow access to the 'profiles' collection.");
-                        setView('error');
-                    } else {
-                        setView('login');
-                    }
+                    currentSeasonId = userProfile.seasonId || "season_1";
+                    loadApp();
+                } else if (isAdmin || isSteward) {
+                    // Admins/Stewards skip onboarding — auto-create profile
+                    const autoRole = isAdmin ? "admin" : "steward";
+                    const autoProfile = {
+                        role: autoRole,
+                        driverId: null,
+                        seasonId: "season_1",
+                        displayName: user.displayName || user.email,
+                        email: user.email,
+                        createdAt: new Date().toISOString()
+                    };
+                    await setDoc(profileRef, autoProfile);
+                    userProfile = autoProfile;
+                    currentSeasonId = "season_1";
+                    loadApp();
+                } else {
+                    // Regular driver — Start Onboarding
+                    document.getElementById("login-screen").style.display = "none";
+                    document.getElementById("onboarding-modal").style.display = "flex";
+                    loadSeasonsForOnboarding();
                 }
-            };
-
-            useEffect(() => {
-                if (view === 'login' || view === 'onboarding' || view === 'loading' || view === 'error') return;
-
-                const driversQuery = query(collection(db, 'seasons', 'season_1', 'drivers'));
-                const unsubDrivers = onSnapshot(driversQuery, (snap) => {
-                    const d = [];
-                    snap.forEach(doc => d.push({ id: doc.id, ...doc.data() }));
-                    setDrivers(d);
-                    
-                    const teamMap = {};
-                    d.forEach(drv => {
-                        if (!drv.team) return;
-                        if (!teamMap[drv.team]) teamMap[drv.team] = { name: drv.team, points: 0, color: getTeamColor(drv.team) };
-                        teamMap[drv.team].points += (drv.totalPoints || 0);
-                    });
-                    setTeams(Object.values(teamMap).sort((a,b) => b.points - a.points));
-                }, (err) => console.log("Driver fetch error:", err));
-
-                const unsubTickets = onSnapshot(query(collection(db, 'tickets')), (snap) => {
-                    const t = [];
-                    snap.forEach(doc => t.push({ id: doc.id, ...doc.data() }));
-                    t.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                    setTickets(t);
-                }, (err) => console.log("Ticket fetch error:", err));
-
-                return () => { unsubDrivers(); unsubTickets(); };
-            }, [view]);
-
-            const handleEmailAuth = async (e) => {
-                e.preventDefault();
-                setAuthError(null);
-                if (authMode !== 'login') return;
-
-                try {
-                    await signInWithEmailAndPassword(auth, authForm.email, authForm.password);
-                } catch (error) {
-                    console.error("Auth Error:", error);
-                    let msg = error.message;
-                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                        msg = "❌ Invalid email or password.";
-                    } else if (error.code === 'auth/network-request-failed') {
-                        msg = "❌ Network error. Check your connection.";
-                    }
-                    setAuthError(msg);
-                }
-            };
-
-            const handleGoogleLogin = async () => {
-                setAuthError(null);
-                try {
-                    await signInWithPopup(auth, new GoogleAuthProvider());
-                } catch (error) {
-                    console.error("Google Auth Error:", error);
-                    let msg = "Google Sign-In failed.";
-                    if (error.code === 'auth/unauthorized-domain') {
-                        msg = `⚠️ Domain Error: This preview URL is not in your authorized domains. Google Sign-In will work once you deploy this app. Please use Email/Password for testing now.`;
-                    } else if (error.code === 'auth/popup-closed-by-user') {
-                        msg = "Sign-in cancelled.";
-                    }
-                    setAuthError(msg);
-                }
-            };
-
-            const handleOnboarding = async (e) => {
-                e.preventDefault();
-                if (!user || !user.email) return;
-
-                const newProfile = {
-                    name: onboardData.name,
-                    steamId: onboardData.steamId,
-                    eaId: onboardData.eaId,
-                    email: user.email,
-                    createdAt: new Date().toISOString()
-                };
-
-                try {
-                    await setDoc(doc(db, 'profiles', user.email), newProfile);
-                    try {
-                        await setDoc(doc(db, 'seasons', 'season_1', 'drivers', user.uid), {
-                            name: onboardData.name,
-                            team: 'Free Agent',
-                            totalPoints: 0,
-                            role: 'driver'
-                        });
-                    } catch (seasonError) {
-                        console.warn("Public stats creation blocked (permission issue). Profile saved anyway.", seasonError);
-                    }
-                    setProfile(newProfile);
-                    setView('dashboard');
-                } catch (err) {
-                    console.error("Onboarding Error:", err);
-                    alert("Failed to save profile. Check console.");
-                }
-            };
-
-            const handleUpdateProfile = async (e) => {
-                e.preventDefault();
-                try {
-                    await updateDoc(doc(db, 'profiles', profile.email), {
-                        steamId: onboardData.steamId,
-                        eaId: onboardData.eaId
-                    });
-                    setProfile({ ...profile, steamId: onboardData.steamId, eaId: onboardData.eaId });
-                    alert("Profile Updated");
-                } catch (err) { alert("Failed to update"); }
-            };
-
-            const createTicket = async (e) => {
-                e.preventDefault();
-                const accusedDriver = drivers.find(d => d.id === newTicket.accusedId);
-                await addDoc(collection(db, 'tickets'), {
-                    reporterId: user.uid,
-                    reporterName: profile.name, 
-                    accusedId: newTicket.accusedId,
-                    accusedName: accusedDriver ? accusedDriver.name : 'Unknown',
-                    session: newTicket.session,
-                    lap: newTicket.lap,
-                    description: newTicket.description,
-                    evidence: newTicket.evidence,
-                    status: 'Open',
-                    accessList: [user.uid],
-                    messages: [],
-                    ruling: null,
-                    createdAt: new Date().toISOString()
-                });
-                setView('tickets');
-                setNewTicket({ accusedId: '', session: 'Race', lap: '', description: '', evidence: '' });
-            };
-
-            const sendMessage = async (e) => {
-                e.preventDefault();
-                if (!chatMessage.trim() || !activeTicketId) return;
-                const ticketRef = doc(db, 'tickets', activeTicketId);
-                const ticket = tickets.find(t => t.id === activeTicketId);
-                const newMessage = {
-                    id: Date.now(),
-                    senderId: user.uid,
-                    senderName: role === 'steward' ? 'Steward' : profile.name,
-                    text: chatMessage,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                };
-                await updateDoc(ticketRef, { messages: [...(ticket.messages || []), newMessage] });
-                setChatMessage("");
-            };
-
-            const summonDriver = async (ticketId, accusedId) => {
-                const ticketRef = doc(db, 'tickets', ticketId);
-                const ticket = tickets.find(t => t.id === ticketId);
-                await updateDoc(ticketRef, { 
-                    accessList: [...ticket.accessList, accusedId], 
-                    status: 'Investigating',
-                    messages: [...(ticket.messages || []), {
-                        id: Date.now(), senderId: 'system', senderName: 'System', 
-                        text: 'DRIVER SUMMONED: Access granted.', timestamp: new Date().toLocaleTimeString()
-                    }]
-                });
-            };
-
-            const closeTicket = async (ticketId, ruling) => {
-                const ticketRef = doc(db, 'tickets', ticketId);
-                const ticket = tickets.find(t => t.id === ticketId);
-                await updateDoc(ticketRef, { 
-                    status: 'Closed', ruling,
-                    messages: [...(ticket.messages || []), {
-                        id: Date.now(), senderId: 'system', senderName: 'System', 
-                        text: `TICKET CLOSED: ${ruling}`, timestamp: new Date().toLocaleTimeString()
-                    }]
-                });
-            };
-
-            const getTeamColor = (teamName) => {
-                const colors = { 'Red Bull Racing': 'bg-blue-900', 'Ferrari': 'bg-red-600', 'Mercedes': 'bg-cyan-600', 'McLaren': 'bg-orange-500' };
-                return colors[teamName] || 'bg-zinc-600';
-            };
-            const getWins = (d) => d.results ? Object.values(d.results).filter(r => r.position === "1").length : 0;
-            const getDriverStats = () => drivers.find(d => d.id === user?.uid) || {};
-
-            useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [activeTicketId, tickets]);
-
-            const activeTicket = tickets.find(t => t.id === activeTicketId);
-
-            // --- VIEW LOGIC ---
-
-            if (view === 'loading') return <div className="h-screen bg-zinc-950 flex items-center justify-center text-white"><RefreshCw className="animate-spin mr-2"/> Loading...</div>;
-
-            if (view === 'error') {
-                return (
-                    <div className="h-screen bg-zinc-950 flex items-center justify-center p-4">
-                        <Card className="max-w-md w-full p-8 border-red-500">
-                            <div className="flex items-center text-red-500 mb-4">
-                                <AlertTriangle className="w-8 h-8 mr-3" />
-                                <h1 className="text-2xl font-bold">Access Error</h1>
-                            </div>
-                            <p className="text-zinc-300 mb-6">{globalError}</p>
-                            <button onClick={() => { signOut(auth); setView('login'); }} className="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded">Back to Login</button>
-                        </Card>
-                    </div>
-                );
+            } else {
+                document.getElementById("login-screen").style.display = "flex";
+                document.getElementById("main-interface").style.display = "none";
             }
+        });
 
-            if (view === 'login') {
-                return (
-                    <div className="h-screen bg-zinc-950 flex items-center justify-center p-4">
-                        <Card className="max-w-md w-full p-8 space-y-6">
-                            <div className="text-center">
-                                <Flag className="w-16 h-16 text-red-600 mx-auto" />
-                                <h1 className="text-3xl font-bold text-white mt-4">Race Control</h1>
-                            </div>
-                            <div className="flex border-b border-zinc-700">
-                                <button onClick={() => setAuthMode('login')} className={`flex-1 pb-3 text-sm font-medium ${authMode === 'login' ? 'text-white border-b-2 border-red-600' : 'text-zinc-500'}`}>Sign In</button>
-                                <button onClick={() => setAuthMode('register')} className={`flex-1 pb-3 text-sm font-medium ${authMode === 'register' ? 'text-white border-b-2 border-red-600' : 'text-zinc-500'}`}>Sign Up</button>
-                            </div>
-                            
-                            {authMode === 'login' ? (
-                                <form onSubmit={handleEmailAuth} className="space-y-4">
-                                    <div className="relative">
-                                        <Mail className="absolute left-3 top-3 w-5 h-5 text-zinc-500" />
-                                        <input type="email" required value={authForm.email} onChange={e => setAuthForm({...authForm, email: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 pl-10 p-3 rounded text-white" placeholder="Email" />
-                                    </div>
-                                    <div className="relative">
-                                        <Key className="absolute left-3 top-3 w-5 h-5 text-zinc-500" />
-                                        <input type="password" required value={authForm.password} onChange={e => setAuthForm({...authForm, password: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 pl-10 p-3 rounded text-white" placeholder="Password" />
-                                    </div>
-                                    {authError && <div className="bg-red-900/50 p-3 rounded text-red-200 text-sm text-center flex items-center justify-center border border-red-500/50"><AlertTriangle className="w-4 h-4 mr-2 flex-shrink-0"/> {authError}</div>}
-                                    <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded">Sign In</button>
-                                    
-                                    <div className="relative my-4">
-                                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-zinc-700"></div></div>
-                                        <div className="relative flex justify-center text-sm"><span className="px-2 bg-zinc-800 text-zinc-500">Or continue with</span></div>
-                                    </div>
-                                </form>
-                            ) : (
-                                <div className="text-center py-4 space-y-4">
-                                    <div className="bg-zinc-900/50 p-4 rounded-lg border border-zinc-700 text-zinc-300 text-sm">
-                                        <p>To ensure driver verification, please create your account using your Google profile.</p>
-                                    </div>
-                                </div>
-                            )}
+        async function loadApp() {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("onboarding-modal").style.display = "none";
+            document.getElementById("main-interface").style.display = "flex";
+            setTimeout(() => document.getElementById("main-interface").style.opacity = "1", 50);
 
-                            <button onClick={handleGoogleLogin} className="w-full bg-white text-black font-bold py-3 rounded flex items-center justify-center hover:bg-zinc-200 transition-colors">
-                                <Chrome className="w-5 h-5 mr-2"/> 
-                                {authMode === 'login' ? 'Google Sign In' : 'Sign Up with Google'}
-                            </button>
-                            
-                            <div className="text-center mt-4 pt-4 border-t border-zinc-800">
-                                <p className="text-xs text-zinc-500 flex items-center justify-center">
-                                <Info className="w-3 h-3 mr-1" /> 
-                                Project: <span className="text-zinc-300 ml-1 font-mono">{firebaseConfig.projectId}</span>
-                                </p>
-                            </div>
-                        </Card>
-                    </div>
-                );
+            // Update UI with User Info
+            document.getElementById("navUserName").innerText = currentUser.displayName.toUpperCase();
+            document.getElementById("navUserRole").innerText = (userProfile.role || "DRIVER").toUpperCase();
+            document.getElementById("seasonBadge").innerText = currentSeasonId.toUpperCase().replace('_', ' ');
+
+            // PRE-FETCH DRIVERS FOR DROPDOWNS
+            const dq = query(collection(db, "seasons", currentSeasonId, "drivers")); // Just fetch all for dropdown
+            const dSnap = await getDocs(dq);
+            allDriversCache = [];
+            dSnap.forEach(d => allDriversCache.push({ id: d.id, ...d.data() }));
+
+            // Load Data
+            loadDashboard();
+            loadStandings();
+            initTicketsListener();
+
+            // Show steward controls?
+            if (userProfile.role === 'admin' || userProfile.role === 'steward') {
+                document.getElementById('stewardActions').style.display = 'flex';
+                document.getElementById('closeTicketBtn').style.display = 'block';
             }
-
-            if (view === 'onboarding') {
-                return (
-                    <div className="h-screen bg-zinc-950 flex items-center justify-center p-4">
-                        <Card className="max-w-lg w-full p-8 space-y-6">
-                            <h1 className="text-2xl font-bold text-white">Driver Registration</h1>
-                            <form onSubmit={handleOnboarding} className="space-y-4">
-                                <input required value={onboardData.name} onChange={e => setOnboardData({...onboardData, name: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded text-white" placeholder="Driver Name" />
-                                <input required value={onboardData.steamId} onChange={e => setOnboardData({...onboardData, steamId: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded text-white" placeholder="Steam64 ID" />
-                                <input required value={onboardData.eaId} onChange={e => setOnboardData({...onboardData, eaId: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded text-white" placeholder="EA ID" />
-                                <button className="w-full bg-cyan-600 text-white font-bold py-3 rounded">Complete Profile</button>
-                            </form>
-                        </Card>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="min-h-screen bg-zinc-950 text-zinc-100 flex font-sans">
-                    <aside className="w-64 bg-zinc-900 border-r border-zinc-800 hidden md:flex flex-col p-4">
-                        <div className="flex items-center space-x-3 mb-8"><Flag className="h-8 w-8 text-red-600" /><span className="font-bold text-xl">APEX</span></div>
-                        <nav className="space-y-2">
-                            <SidebarBtn icon={LayoutDashboard} label="Dashboard" active={view === 'dashboard'} onClick={() => setView('dashboard')} />
-                            <SidebarBtn icon={AlertCircle} label="Stewards" active={view.includes('ticket')} onClick={() => setView('tickets')} />
-                            <SidebarBtn icon={Settings} label="Profile" active={view === 'settings'} onClick={() => { setOnboardData({ name: profile.name, steamId: profile.steamId, eaId: profile.eaId }); setView('settings'); }} />
-                        </nav>
-                        <div className="mt-auto pt-4 border-t border-zinc-800 flex items-center justify-between">
-                            <div>
-                                <div className="text-sm font-bold">{profile?.name}</div>
-                                <div className="text-xs text-zinc-500 uppercase">{role}</div>
-                            </div>
-                            <button onClick={() => { signOut(auth); setView('login'); }}><LogOut className="h-5 w-5 text-zinc-400"/></button>
-                        </div>
-                    </aside>
-
-                    <main className="flex-1 overflow-y-auto p-8">
-                        {view === 'dashboard' && (
-                            <div className="space-y-6">
-                                <h1 className="text-3xl font-bold">Dashboard</h1>
-                                {role === 'steward' && <div className="bg-red-900/20 border border-red-500/30 p-4 rounded text-red-200"><Shield className="inline mr-2"/> Steward Access Active</div>}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <Card className="p-6"><h3 className="text-zinc-400">Points</h3><div className="text-4xl font-bold mt-2">{getDriverStats().totalPoints || 0}</div></Card>
-                                    <Card className="p-6"><h3 className="text-zinc-400">Wins</h3><div className="text-4xl font-bold mt-2">{getWins(getDriverStats())}</div></Card>
-                                    <Card className="p-6"><h3 className="text-zinc-400">Team</h3><div className="text-2xl font-bold mt-2">{getDriverStats().team || 'Free Agent'}</div></Card>
-                                </div>
-                                <Card className="p-0 mt-6">
-                                    <div className="p-4 border-b border-zinc-700 font-bold">Standings</div>
-                                    <table className="w-full text-left text-sm">
-                                        <thead className="bg-zinc-800/50 text-zinc-400"><tr><th className="p-3">Pos</th><th className="p-3">Driver</th><th className="p-3 text-right">Pts</th></tr></thead>
-                                        <tbody className="divide-y divide-zinc-700">
-                                            {drivers.sort((a,b) => (b.totalPoints||0) - (a.totalPoints||0)).map((d,i) => (
-                                                <tr key={d.id} className={user.uid === d.id ? 'bg-zinc-700/50' : ''}>
-                                                    <td className="p-3 text-zinc-500">{i+1}</td>
-                                                    <td className="p-3">{d.name}</td>
-                                                    <td className="p-3 text-right font-bold">{d.totalPoints||0}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </Card>
-                            </div>
-                        )}
-
-                        {view === 'settings' && (
-                            <div className="max-w-2xl mx-auto space-y-6">
-                                <h1 className="text-3xl font-bold">Profile</h1>
-                                <Card className="p-6">
-                                    <form onSubmit={handleUpdateProfile} className="space-y-4">
-                                        <div><label className="text-zinc-500 text-sm">Email</label><div className="p-3 bg-zinc-900 rounded text-zinc-400">{profile.email}</div></div>
-                                        <div><label className="text-zinc-500 text-sm">Name</label><div className="p-3 bg-zinc-900 rounded text-zinc-400">{profile.name}</div></div>
-                                        <div className="border-t border-zinc-700 pt-4"><label className="text-zinc-500 text-sm">Steam ID</label><input value={onboardData.steamId} onChange={e => setOnboardData({...onboardData, steamId: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded text-white mt-1"/></div>
-                                        <div><label className="text-zinc-500 text-sm">EA ID</label><input value={onboardData.eaId} onChange={e => setOnboardData({...onboardData, eaId: e.target.value})} className="w-full bg-zinc-900 border border-zinc-700 p-3 rounded text-white mt-1"/></div>
-                                        <button className="bg-cyan-600 text-white px-6 py-2 rounded">Save</button>
-                                    </form>
-                                </Card>
-                            </div>
-                        )}
-
-                        {view === 'tickets' && (
-                            <div className="space-y-6">
-                                <div className="flex justify-between"><h1 className="text-3xl font-bold">Stewards Room</h1>{role !== 'steward' && <button onClick={() => setView('create-ticket')} className="bg-red-600 text-white px-4 py-2 rounded flex items-center"><Plus className="w-4 h-4 mr-2"/>New</button>}</div>
-                                <div className="grid gap-3">
-                                    {tickets.filter(t => t.accessList.includes(user.uid) || role === 'steward').map(t => (
-                                        <Card key={t.id} className="p-4 flex justify-between items-center hover:bg-zinc-800/80 cursor-pointer" onClick={() => { setActiveTicketId(t.id); setView('ticket-detail'); }}>
-                                            <div><div className="flex items-center gap-2"><span className="font-bold">{t.session}</span><Badge status={t.status} /></div><div className="text-sm text-zinc-400 mt-1">{t.reporterName} vs {t.accusedName}</div></div>
-                                        </Card>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {view === 'create-ticket' && (
-                            <Card className="max-w-2xl mx-auto p-6">
-                                <h2 className="text-xl font-bold mb-4">New Report</h2>
-                                <form onSubmit={createTicket} className="space-y-4">
-                                    <input className="w-full bg-zinc-900 p-2 rounded border border-zinc-700" placeholder="Session" value={newTicket.session} onChange={e => setNewTicket({...newTicket, session: e.target.value})} />
-                                    <input className="w-full bg-zinc-900 p-2 rounded border border-zinc-700" placeholder="Lap" value={newTicket.lap} onChange={e => setNewTicket({...newTicket, lap: e.target.value})} />
-                                    <select className="w-full bg-zinc-900 p-2 rounded border border-zinc-700" value={newTicket.accusedId} onChange={e => setNewTicket({...newTicket, accusedId: e.target.value})}>{drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select>
-                                    <textarea className="w-full bg-zinc-900 p-2 rounded border border-zinc-700" rows="3" placeholder="Description" value={newTicket.description} onChange={e => setNewTicket({...newTicket, description: e.target.value})} />
-                                    <input className="w-full bg-zinc-900 p-2 rounded border border-zinc-700" placeholder="Evidence URL" value={newTicket.evidence} onChange={e => setNewTicket({...newTicket, evidence: e.target.value})} />
-                                    <button className="bg-red-600 text-white px-6 py-2 rounded">Submit</button>
-                                </form>
-                            </Card>
-                        )}
-                        
-                        {view === 'ticket-detail' && activeTicket && (
-                            <div className="flex flex-col md:flex-row gap-4 h-[calc(100vh-100px)]">
-                                <div className="md:w-1/3 space-y-4">
-                                    <button onClick={() => setView('tickets')} className="text-sm text-zinc-400">← Back</button>
-                                    <Card className="p-4 space-y-4">
-                                        <h2 className="font-bold text-xl">#{activeTicket.id}</h2><Badge status={activeTicket.status} />
-                                        <p className="text-zinc-300">{activeTicket.description}</p>
-                                        <a href={activeTicket.evidence} target="_blank" rel="noreferrer" className="text-cyan-400 flex items-center text-sm"><ExternalLink className="w-3 h-3 mr-1"/> Evidence</a>
-                                        {role === 'steward' && activeTicket.status !== 'Closed' && (<div className="pt-4 border-t border-zinc-700 space-y-2"><button onClick={() => summonDriver(activeTicket.id, activeTicket.accusedId)} className="w-full bg-blue-900/50 text-blue-200 p-2 rounded text-sm">Summon Driver</button><button onClick={() => closeTicket(activeTicket.id, prompt('Ruling?'))} className="w-full bg-red-900/50 text-red-200 p-2 rounded text-sm">Penalize & Close</button></div>)}
-                                    </Card>
-                                </div>
-                                <div className="md:w-2/3 flex flex-col bg-zinc-900 rounded border border-zinc-800">
-                                    <div className="flex-1 overflow-y-auto p-4 space-y-3">{(activeTicket.messages||[]).map(m => (<div key={m.id} className={`p-2 rounded max-w-[80%] ${m.senderId === user.uid ? 'ml-auto bg-cyan-900/30' : 'bg-zinc-800'}`}><div className="text-xs text-zinc-500 font-bold mb-1">{m.senderName}</div><div>{m.text}</div></div>))}<div ref={messagesEndRef} /></div>
-                                    {activeTicket.status !== 'Closed' && (<form onSubmit={sendMessage} className="p-3 border-t border-zinc-800 flex gap-2"><input className="flex-1 bg-zinc-950 p-2 rounded border border-zinc-700" value={chatMessage} onChange={e => setChatMessage(e.target.value)} /><button className="bg-cyan-600 p-2 rounded"><Send className="w-4 h-4 text-white"/></button></form>)}
-                                </div>
-                            </div>
-                        )}
-                    </main>
-                </div>
-            );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<RacingApp />);
+        // --- ONBOARDING LOGIC ---
+        window.loadSeasonsForOnboarding = async () => {
+            const q = query(collection(db, "seasons"));
+            const snap = await getDocs(q);
+            const sel = document.getElementById("onboardSeason");
+            sel.innerHTML = '<option value="">-- SELECT SEASON --</option>';
+            snap.forEach(doc => {
+                sel.innerHTML += `<option value="${doc.id}">${doc.id.toUpperCase()}</option>`;
+            });
+        };
+
+        window.loadOnboardDrivers = async () => {
+            const season = document.getElementById("onboardSeason").value;
+            if (!season) return;
+            const sel = document.getElementById("onboardDriver");
+            sel.innerHTML = '<option value="">LOADING...</option>';
+
+            const q = query(collection(db, "seasons", season, "drivers"));
+            const snap = await getDocs(q);
+            sel.innerHTML = '<option value="">-- SELECT YOUR NAME --</option>';
+            snap.forEach(d => {
+                sel.innerHTML += `<option value="${d.id}|${d.data().name}">${d.data().name} (${d.data().team})</option>`;
+            });
+        };
+
+        window.completeOnboarding = async () => {
+            const season = document.getElementById("onboardSeason").value;
+            const driverVal = document.getElementById("onboardDriver").value;
+            if (!season || !driverVal) return alert("Please select both Season and Driver");
+
+            const [driverId, driverName] = driverVal.split('|');
+
+            // Create Profile
+            try {
+                // Check if this driver ID is already taken by another UID? 
+                // Enhanced security would check, but for now we trust the flow.
+
+                await setDoc(doc(db, "profiles", currentUser.uid), {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    displayName: currentUser.displayName,
+                    seasonId: season,
+                    driverId: driverId,
+                    driverName: driverName,
+                    role: "driver", // Default role
+                    createdAt: new Date().toISOString()
+                });
+
+                // Reload page to trigger auth check again
+                window.location.reload();
+            } catch (e) {
+                console.error("Onboarding failed", e);
+                alert("Error linking profile: " + e.message);
+            }
+        };
+
+        // --- CORE FUNCTIONS ---
+        async function loadDashboard() {
+            // Get Driver Data
+            if (!userProfile || !userProfile.driverId) return;
+
+            const driverRef = doc(db, "seasons", currentSeasonId, "drivers", userProfile.driverId);
+            onSnapshot(driverRef, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    const elName = document.getElementById("dashDriverName"); if (elName) elName.innerText = data.name.toUpperCase();
+                    const elPts = document.getElementById("dashPoints"); if (elPts) elPts.innerText = data.totalPoints || 0;
+                    const elTeam = document.getElementById("dashTeam"); if (elTeam) elTeam.innerText = (data.team || "NO TEAM").toUpperCase();
+                    calculateRank(data.totalPoints);
+                }
+            });
+        }
+
+        async function calculateRank(myPoints) {
+            const q = query(collection(db, "seasons", currentSeasonId, "drivers"));
+            const snap = await getDocs(q);
+            let higher = 0;
+            snap.forEach(d => {
+                if (d.data().totalPoints > myPoints) higher++;
+            });
+            const elRank = document.getElementById("dashRank"); if (elRank) elRank.innerText = "P" + (higher + 1);
+        }
+
+        async function loadStandings() {
+            const q = query(collection(db, "seasons", currentSeasonId, "drivers"));
+            onSnapshot(q, (snap) => {
+                const drivers = [];
+                snap.forEach(d => drivers.push(d.data()));
+                drivers.sort((a, b) => b.totalPoints - a.totalPoints);
+
+                const tb = document.getElementById("standingsTableBody");
+                if (tb) {
+                    tb.innerHTML = "";
+                    drivers.forEach((d, i) => {
+                        tb.innerHTML += `
+                            <tr style="border-bottom: 1px solid var(--hover-bg);">
+                                <td style="padding: 12px; font-weight:700;">${i + 1}</td>
+                                <td style="padding: 12px; font-weight:600; color: var(--text-primary);">${d.name}</td>
+                                <td style="padding: 12px; font-size:0.9rem; color: var(--text-secondary);">${d.team}</td>
+                                <td style="padding: 12px; text-align:right; color: var(--accent-cyan); font-weight:700;">${d.totalPoints}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+        }
+
+        // --- TICKET SYSTEM ---
+        function initTicketsListener() {
+            // Query: If Admin/Steward -> All tickets. If Driver -> Tickets where reporterId == uid OR accessList contains uid.
+            // Firestore rules handle security, but client query needs to match or filtered locally.
+            // Simplified: Query all tickets, filter client side if needed (not ideal for huge datasets but fine here)
+            // ACTUALLY: Firestore requires 'array-contains' for accessList. 
+            // OR we can't do OR queries easily across fields.
+            // For Admin/Steward, we want ALL. For Driver, we want 'my access'.
+
+            let q;
+            if (userProfile.role === 'admin' || userProfile.role === 'steward') {
+                q = query(collection(db, "tickets"), orderBy("updatedAt", "desc"));
+            } else {
+                q = query(collection(db, "tickets"), where("accessList", "array-contains", currentUser.uid), orderBy("updatedAt", "desc"));
+                // Note: Index might be needed for accessList + updatedAt in Firestore
+            }
+
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById("ticketList");
+                list.innerHTML = "";
+                if (snap.empty) {
+                    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">NO PREVIOUS TICKETS</div>';
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const t = d.data();
+                    const isOpen = t.status === 'Open';
+                    const statusColor = isOpen ? 'var(--accent-yellow)' : 'var(--accent-green)';
+                    const isSelected = currentTicketId === d.id ? 'background:rgba(255,255,255,0.1);' : '';
+
+                    list.innerHTML += `
+                        <div onclick="window.loadTicketDetail('${d.id}')" style="cursor:pointer; padding:12px; border-bottom:1px solid var(--border-dim); ${isSelected} transition:0.2s;" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='${currentTicketId === d.id ? "rgba(255,255,255,0.1)" : "transparent"}'">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${d.id.substring(0, 6)}</span>
+                                <span style="font-size:0.7rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}; padding:2px 4px; border-radius:4px;">${t.status.toUpperCase()}</span>
+                            </div>
+                            <div style="font-size:0.8rem; color:var(--text-secondary);">vs ${t.reportedName}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">${t.session}</div>
+                        </div>
+                    `;
+
+                    // Live Update Detail if selected
+                    if (currentTicketId === d.id) {
+                        renderChat(t.messages);
+                        document.getElementById('ticketStatusBadge').innerText = t.status.toUpperCase();
+                        document.getElementById('ticketStatusBadge').style.background = statusColor;
+                    }
+                });
+            }, (error) => {
+                console.error("Ticket Listen Error", error);
+                // Likely index missing or permissions
+                if (error.code === 'failed-precondition') {
+                    console.log("Adding index link to console usually...");
+                }
+            });
+        }
+
+        window.openNewTicketModal = () => {
+            document.getElementById('new-ticket-modal').style.display = 'flex';
+            const sel = document.getElementById('nt_reportedDriver');
+            sel.innerHTML = '<option value="">-- SELECT --</option>';
+            allDriversCache.forEach(d => {
+                if (d.id !== userProfile.driverId) {
+                    sel.innerHTML += `<option value="${d.id}|${d.name}">${d.name} (${d.team})</option>`;
+                }
+            });
+        };
+
+        window.createTicket = async () => {
+            const reportedVal = document.getElementById('nt_reportedDriver').value;
+            const session = document.getElementById('nt_session').value;
+            const lap = document.getElementById('nt_lap').value;
+            const desc = document.getElementById('nt_description').value;
+            const evidence = document.getElementById('nt_evidence').value;
+
+            if (!reportedVal || !session || !desc) return alert("Fill all required fields");
+
+            const [reportedId, reportedName] = reportedVal.split('|');
+
+            try {
+                await addDoc(collection(db, "tickets"), {
+                    reporterId: currentUser.uid,
+                    reporterName: userProfile.driverName || currentUser.displayName,
+                    reportedDriverId: reportedId,
+                    reportedName: reportedName,
+                    session: session,
+                    lap: lap,
+                    description: desc,
+                    evidence: evidence,
+                    status: "Open",
+                    seasonId: currentSeasonId,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    accessList: [currentUser.uid], // Access: Reporter only initially. Steward must add reported driver?
+                    // Actually, let's keep it limited initially. Steward adds access.
+                    messages: [
+                        { sender: 'SYSTEM', text: `Ticket Created by ${userProfile.driverName}. Description: ${desc}`, time: new Date().toISOString() }
+                    ]
+                });
+                document.getElementById('new-ticket-modal').style.display = 'none';
+                window.showToast("TICKET FILED");
+            } catch (e) { console.error(e); alert("Error: " + e.message); }
+        };
+
+        window.loadTicketDetail = async (ticketId) => {
+            currentTicketId = ticketId;
+            document.getElementById('noTicketSelected').style.display = 'none';
+            document.getElementById('ticketDetailPanel').style.display = 'flex';
+
+            // Re-fetch to accept instant update or rely on listener
+            // Listener handles list, let's just GET once to set static fields quickly
+            const snap = await getDoc(doc(db, "tickets", ticketId));
+            if (!snap.exists()) return;
+            const t = snap.data();
+
+            document.getElementById('ticketTitle').innerText = `TICKET #${ticketId.substring(0, 6)}`;
+            document.getElementById('ticketReporter').innerText = t.reporterName;
+            document.getElementById('ticketReported').innerText = t.reportedName;
+            document.getElementById('ticketSession').innerText = t.session;
+            document.getElementById('ticketLap').innerText = t.lap;
+            document.getElementById('ticketEvidence').href = t.evidence;
+            document.getElementById('ticketEvidence').innerText = t.evidence ? "VIEW LINK" : "NO LINK";
+
+            renderChat(t.messages);
+
+            // Highlight in list
+            document.querySelectorAll('#ticketList > div').forEach(el => {
+                // Reset styles (simple approach) or rely on re-render
+            });
+        };
+
+        function renderChat(messages) {
+            const area = document.getElementById('ticketChatArea');
+            area.innerHTML = "";
+            (messages || []).forEach(m => {
+                const isMe = m.senderUid === currentUser.uid;
+                const isSystem = m.sender === 'SYSTEM';
+                const align = isMe ? 'flex-end' : (isSystem ? 'center' : 'flex-start');
+                const bg = isMe ? 'var(--accent-cyan)' : (isSystem ? 'rgba(255,255,255,0.1)' : 'var(--bg-panel)');
+                const color = isMe ? '#000' : 'var(--text-primary)';
+                const radius = isSystem ? '4px' : '12px';
+                const width = isSystem ? '100%' : 'auto';
+
+                area.innerHTML += `
+                    <div style="display:flex; justify-content:${align};">
+                        <div style="background:${bg}; color:${color}; padding:8px 12px; border-radius:${radius}; max-width:80%; font-size:0.9rem; border:1px solid var(--border-dim);">
+                            ${!isMe && !isSystem ? `<div style="font-size:0.7rem; font-weight:700; opacity:0.7; margin-bottom:2px;">${m.sender}</div>` : ''}
+                            ${m.text}
+                        </div>
+                    </div>
+                `;
+            });
+            area.scrollTop = area.scrollHeight;
+        }
+
+        window.sendMessage = async () => {
+            if (!currentTicketId) return;
+            const txt = document.getElementById('chatInput').value.trim();
+            if (!txt) return;
+
+            const msgObj = {
+                sender: userProfile.driverName || 'User',
+                senderUid: currentUser.uid,
+                text: txt,
+                time: new Date().toISOString()
+            };
+
+            await updateDoc(doc(db, "tickets", currentTicketId), {
+                messages: arrayUnion(msgObj),
+                updatedAt: new Date().toISOString()
+            });
+            document.getElementById('chatInput').value = "";
+        };
+
+        // --- STEWARD FUNCTIONS ---
+        window.stewardAddDriver = async () => {
+            if (!currentTicketId) return;
+            // Get ticket to find reported driver ID
+            const snap = await getDoc(doc(db, "tickets", currentTicketId));
+            const t = snap.data();
+
+            // We need the UID of the Reported Driver.
+            // Problem: We stored reportedDriverId (the Season Driver ID), not the User UID.
+            // We need to look up Profile by driverId.
+            // This requires a query on 'profiles' where driverId == t.reportedDriverId
+
+            const pq = query(collection(db, "profiles"), where("driverId", "==", t.reportedDriverId), where("seasonId", "==", currentSeasonId));
+            const pSnap = await getDocs(pq);
+
+            if (pSnap.empty) {
+                alert("This driver has not registered on the portal yet. Cannot add them to chat.");
+                return;
+            }
+
+            const reportedUID = pSnap.docs[0].data().uid;
+
+            if (t.accessList.includes(reportedUID)) {
+                alert("Driver already has access.");
+                return;
+            }
+
+            await updateDoc(doc(db, "tickets", currentTicketId), {
+                accessList: arrayUnion(reportedUID),
+                messages: arrayUnion({ sender: 'SYSTEM', text: `Steward added ${t.reportedName} to the ticket.`, time: new Date().toISOString() })
+            });
+            window.showToast("DRIVER ADDED");
+        };
+
+        window.openResolutionModal = () => document.getElementById('resolution-modal').style.display = 'flex';
+
+        window.confirmCloseTicket = async () => {
+            if (!currentTicketId) return;
+            const outcome = document.getElementById('res_outcome').value;
+            const notes = document.getElementById('res_notes').value;
+
+            await updateDoc(doc(db, "tickets", currentTicketId), {
+                status: "Closed",
+                outcome: outcome,
+                stewardNotes: notes,
+                messages: arrayUnion({ sender: 'SYSTEM', text: `TICKET CLOSED. Outcome: ${outcome}. Notes: ${notes}`, time: new Date().toISOString() })
+            });
+            document.getElementById('resolution-modal').style.display = 'none';
+            window.showToast("TICKET CLOSED");
+        }
+
+        // --- UI UTILS ---
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            // Find button approx
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(b => { if (b.innerHTML.toLowerCase().includes(tabId)) b.classList.add('active'); });
+        };
+
+        window.showToast = (msg) => {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        };
     </script>
 </body>
+
 </html>
