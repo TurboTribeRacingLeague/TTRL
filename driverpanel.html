@@ -1113,7 +1113,8 @@
     <!-- NEW TICKET MODAL -->
     <div id="new-ticket-modal"
         style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center;">
-        <div class="panel" style="width: 500px; border: 1px solid var(--accent-cyan);">
+        <div class="panel"
+            style="width: 520px; border: 1px solid var(--accent-cyan); max-height:90vh; overflow-y:auto;">
             <div class="panel-header">
                 <div class="panel-title">FILE NEW INCIDENT</div>
                 <button onclick="document.getElementById('new-ticket-modal').style.display='none'"
@@ -1121,10 +1122,20 @@
                         class="fas fa-times"></i></button>
             </div>
             <div class="panel-body">
-                <label class="input-label">DRIVER INVOLVED</label>
-                <select id="nt_reportedDriver" class="form-control input-group">
-                    <option value="">LOADING...</option>
-                </select>
+                <!-- Admin/Steward: Select who is reporting -->
+                <div id="nt_reporterRow" style="display:none; margin-bottom:10px;">
+                    <label class="input-label">REPORTING DRIVER</label>
+                    <select id="nt_reporterDriver" class="form-control input-group">
+                        <option value="">-- SELECT REPORTER --</option>
+                    </select>
+                </div>
+
+                <label class="input-label">DRIVER(S) INVOLVED <span
+                        style="font-size:0.7rem; color:var(--text-muted);">(select one or more)</span></label>
+                <div id="nt_driverCheckboxes"
+                    style="max-height:160px; overflow-y:auto; background:var(--hover-bg); border:1px solid var(--border-dim); border-radius:8px; padding:8px 12px; margin-bottom:12px;">
+                    <div style="text-align:center; color:var(--text-muted); font-size:0.8rem;">LOADING...</div>
+                </div>
 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
@@ -1526,7 +1537,7 @@
                     list.innerHTML += `
                         <div class="ticket-item${isSelected ? ' active-ticket' : ''}" onclick="window.loadTicketDetail('${item.id}')">
                             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                                <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${item.id.substring(0, 6)}</span>
+                                <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${t.ticketNumber || item.id.substring(0, 6)}</span>
                                 <span style="font-size:0.7rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}; padding:2px 4px; border-radius:4px;">${t.status.toUpperCase()}</span>
                             </div>
                             <div style="font-size:0.8rem; color:var(--text-secondary);">vs ${t.reportedName}</div>
@@ -1562,7 +1573,7 @@
                 list.innerHTML += `
                     <div class="ticket-item${isSelected ? ' active-ticket' : ''}" onclick="window.loadTicketDetail('${d.id}')">
                         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                            <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${d.id.substring(0, 6)}</span>
+                            <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${t.ticketNumber || d.id.substring(0, 6)}</span>
                             <span style="font-size:0.7rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}; padding:2px 4px; border-radius:4px;">${t.status.toUpperCase()}</span>
                         </div>
                         <div style="font-size:0.8rem; color:var(--text-secondary);">vs ${t.reportedName}</div>
@@ -1579,14 +1590,36 @@
 
         window.openNewTicketModal = () => {
             document.getElementById('new-ticket-modal').style.display = 'flex';
-            // Populate driver dropdown
-            const sel = document.getElementById('nt_reportedDriver');
-            sel.innerHTML = '<option value="">-- SELECT --</option>';
+
+            // Admin/Steward: show reporter dropdown
+            const isPrivileged = userProfile.role === 'admin' || userProfile.role === 'steward';
+            const reporterRow = document.getElementById('nt_reporterRow');
+            reporterRow.style.display = isPrivileged ? 'block' : 'none';
+
+            if (isPrivileged) {
+                const rSel = document.getElementById('nt_reporterDriver');
+                rSel.innerHTML = '<option value="">-- SELECT REPORTER --</option>';
+                allDriversCache.forEach(d => {
+                    rSel.innerHTML += `<option value="${d.id}|${d.name}">${d.name} (${d.team})</option>`;
+                });
+            }
+
+            // Populate driver checkboxes (multi-select)
+            const cbContainer = document.getElementById('nt_driverCheckboxes');
+            cbContainer.innerHTML = '';
             allDriversCache.forEach(d => {
-                if (d.id !== userProfile.driverId) {
-                    sel.innerHTML += `<option value="${d.id}|${d.name}">${d.name} (${d.team})</option>`;
-                }
+                // Skip current user for drivers (they're the reporter), but show all for admin
+                if (!isPrivileged && d.id === userProfile.driverId) return;
+                cbContainer.innerHTML += `
+                    <label style="display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer; font-size:0.85rem; color:var(--text-primary);">
+                        <input type="checkbox" name="nt_reported_drivers" value="${d.id}|${d.name}"
+                            style="accent-color:var(--accent-cyan); width:16px; height:16px; cursor:pointer;">
+                        <span style="font-weight:600;">${d.name}</span>
+                        <span style="color:var(--text-muted); font-size:0.75rem;">${d.team}</span>
+                    </label>
+                `;
             });
+
             // Populate session dropdown from calendar
             const sessSel = document.getElementById('nt_session');
             sessSel.innerHTML = '<option value="">-- SELECT RACE --</option>';
@@ -1597,21 +1630,63 @@
         };
 
         window.createTicket = async () => {
-            const reportedVal = document.getElementById('nt_reportedDriver').value;
+            // Get selected drivers (multi-select checkboxes)
+            const checked = document.querySelectorAll('input[name="nt_reported_drivers"]:checked');
             const session = document.getElementById('nt_session').value;
             const lap = document.getElementById('nt_lap').value;
             const desc = document.getElementById('nt_description').value;
             const evidence = document.getElementById('nt_evidence').value;
 
-            if (!reportedVal || !session || !desc) return alert("Fill all required fields");
-            const [reportedId, reportedName] = reportedVal.split('|');
+            if (checked.length === 0 || !session || !desc) return alert("Select at least one driver, a session, and a description.");
+
+            // Determine the reporter
+            const isPrivileged = userProfile.role === 'admin' || userProfile.role === 'steward';
+            let reporterId = currentUser.uid;
+            let reporterName = userProfile.driverName || currentUser.displayName;
+
+            if (isPrivileged) {
+                const reporterVal = document.getElementById('nt_reporterDriver').value;
+                if (reporterVal) {
+                    const [rId, rName] = reporterVal.split('|');
+                    reporterId = rId;
+                    reporterName = rName;
+                }
+                // If no reporter selected, admin is the reporter
+            }
+
+            // Collect all reported drivers
+            const reportedDrivers = [];
+            const reportedNames = [];
+            const reportedIds = [];
+            checked.forEach(cb => {
+                const [dId, dName] = cb.value.split('|');
+                reportedDrivers.push({ id: dId, name: dName });
+                reportedNames.push(dName);
+                reportedIds.push(dId);
+            });
 
             try {
+                // Get next ticket number (auto-increment)
+                const counterRef = doc(db, "meta", "ticketCounter");
+                let ticketNum = 1;
+                try {
+                    const counterSnap = await getDoc(counterRef);
+                    if (counterSnap.exists()) {
+                        ticketNum = (counterSnap.data().count || 0) + 1;
+                    }
+                    await setDoc(counterRef, { count: ticketNum }, { merge: true });
+                } catch (e) {
+                    console.warn("Could not update ticket counter, using timestamp fallback:", e);
+                    ticketNum = Date.now() % 100000;
+                }
+
                 await addDoc(collection(db, "tickets"), {
-                    reporterId: currentUser.uid,
-                    reporterName: userProfile.driverName || currentUser.displayName,
-                    reportedDriverId: reportedId,
-                    reportedName: reportedName,
+                    ticketNumber: ticketNum,
+                    reporterId: reporterId,
+                    reporterName: reporterName,
+                    reportedDrivers: reportedDrivers,
+                    reportedDriverId: reportedIds[0],
+                    reportedName: reportedNames.join(', '),
                     session: session,
                     lap: lap,
                     description: desc,
@@ -1620,13 +1695,13 @@
                     seasonId: currentSeasonId,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
-                    accessList: [currentUser.uid],
+                    accessList: [currentUser.uid, ...reportedIds],
                     messages: [
-                        { sender: 'SYSTEM', text: `Ticket Created by ${userProfile.driverName || currentUser.displayName}. Description: ${desc}`, time: new Date().toISOString() }
+                        { sender: 'SYSTEM', text: `Ticket #${ticketNum} created by ${reporterName}. Reported: ${reportedNames.join(', ')}. ${desc}`, time: new Date().toISOString() }
                     ]
                 });
                 document.getElementById('new-ticket-modal').style.display = 'none';
-                showToast("TICKET FILED");
+                showToast(`TICKET #${ticketNum} FILED`);
             } catch (e) { console.error(e); alert("Error: " + e.message); }
         };
 
@@ -1639,7 +1714,7 @@
             if (!snap.exists()) return;
             const t = snap.data();
 
-            document.getElementById('ticketTitle').innerText = `TICKET #${ticketId.substring(0, 6)}`;
+            document.getElementById('ticketTitle').innerText = `TICKET #${t.ticketNumber || ticketId.substring(0, 6)}`;
             document.getElementById('ticketReporter').innerText = t.reporterName;
             document.getElementById('ticketReported').innerText = t.reportedName;
             document.getElementById('ticketSession').innerText = t.session;
@@ -1691,6 +1766,39 @@
                 statusBadge.style.background = 'var(--accent-yellow)';
             }
         }
+
+        window.stewardAddDriver = async () => {
+            if (!currentTicketId) return;
+            // Show a prompt listing available drivers
+            const names = allDriversCache.map(d => d.name).join(', ');
+            const input = prompt(`Enter driver name to add:\n\nAvailable: ${names}`);
+            if (!input) return;
+
+            const driver = allDriversCache.find(d => d.name.toLowerCase() === input.trim().toLowerCase());
+            if (!driver) return alert("Driver not found. Check the name and try again.");
+
+            try {
+                await updateDoc(doc(db, "tickets", currentTicketId), {
+                    accessList: arrayUnion(driver.id),
+                    reportedDrivers: arrayUnion({ id: driver.id, name: driver.name }),
+                    messages: arrayUnion({
+                        sender: 'SYSTEM',
+                        text: `${driver.name} added to ticket by steward.`,
+                        time: new Date().toISOString()
+                    }),
+                    updatedAt: new Date().toISOString()
+                });
+                // Update the reported name display
+                const snap = await getDoc(doc(db, "tickets", currentTicketId));
+                if (snap.exists()) {
+                    const t = snap.data();
+                    const allNames = (t.reportedDrivers || []).map(d => d.name).join(', ');
+                    await updateDoc(doc(db, "tickets", currentTicketId), { reportedName: allNames });
+                    document.getElementById('ticketReported').innerText = allNames;
+                }
+                showToast(`${driver.name} ADDED TO TICKET`);
+            } catch (e) { console.error(e); alert("Error: " + e.message); }
+        };
 
         function renderChat(messages) {
             const area = document.getElementById('ticketChatArea');
@@ -1828,7 +1936,7 @@
                 return `<div class="report-card">
                     <div class="report-info">
                         <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px;">
-                            <span style="color:var(--text-muted);">#${r.id.substring(0, 6)}</span>
+                            <span style="color:var(--text-muted);">#${r.ticketNumber || r.id.substring(0, 6)}</span>
                             <span style="margin-left:8px;">${r.reporterName} vs ${r.reportedName}</span>
                         </div>
                         <div style="font-size:0.8rem; color:var(--text-secondary);">
