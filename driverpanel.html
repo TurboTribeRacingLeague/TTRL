@@ -1491,23 +1491,24 @@
         }
 
         async function fallbackTicketQuery() {
-            // Fallback: Query without seasonId compound, filter client-side
+            // Fallback: No orderBy, no seasonId compound — sort client-side
             let q;
             if (userProfile.role === 'admin' || userProfile.role === 'steward') {
-                q = query(collection(db, "tickets"), orderBy("updatedAt", "desc"));
+                q = query(collection(db, "tickets"));
             } else {
-                q = query(collection(db, "tickets"), where("accessList", "array-contains", currentUser.uid), orderBy("updatedAt", "desc"));
+                q = query(collection(db, "tickets"), where("accessList", "array-contains", currentUser.uid));
             }
 
             ticketUnsubscribe = onSnapshot(q, (snap) => {
-                // Client-side filter by season (include legacy tickets without seasonId)
+                // Client-side filter by season + sort by updatedAt
                 const filtered = [];
                 snap.forEach(d => {
                     const data = d.data();
                     if (data.seasonId === currentSeasonId || !data.seasonId) {
-                        filtered.push(d);
+                        filtered.push({ id: d.id, data: data });
                     }
                 });
+                filtered.sort((a, b) => new Date(b.data.updatedAt || 0) - new Date(a.data.updatedAt || 0));
 
                 const list = document.getElementById("ticketList");
                 list.innerHTML = "";
@@ -1516,16 +1517,16 @@
                     return;
                 }
 
-                filtered.forEach(d => {
-                    const t = d.data();
+                filtered.forEach(item => {
+                    const t = item.data;
                     const isOpen = t.status === 'Open';
                     const statusColor = isOpen ? 'var(--accent-yellow)' : 'var(--accent-green)';
-                    const isSelected = currentTicketId === d.id;
+                    const isSelected = currentTicketId === item.id;
 
                     list.innerHTML += `
-                        <div class="ticket-item${isSelected ? ' active-ticket' : ''}" onclick="window.loadTicketDetail('${d.id}')">
+                        <div class="ticket-item${isSelected ? ' active-ticket' : ''}" onclick="window.loadTicketDetail('${item.id}')">
                             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                                <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${d.id.substring(0, 6)}</span>
+                                <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${item.id.substring(0, 6)}</span>
                                 <span style="font-size:0.7rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}; padding:2px 4px; border-radius:4px;">${t.status.toUpperCase()}</span>
                             </div>
                             <div style="font-size:0.8rem; color:var(--text-secondary);">vs ${t.reportedName}</div>
@@ -1533,7 +1534,7 @@
                         </div>
                     `;
 
-                    if (currentTicketId === d.id) {
+                    if (currentTicketId === item.id) {
                         renderChat(t.messages);
                         updateTicketClosedState(t);
                     }
@@ -1772,18 +1773,35 @@
             let reports = [];
 
             try {
-                const q = query(collection(db, "tickets"), where("seasonId", "==", currentSeasonId), where("status", "==", "Closed"));
+                // For drivers, must include accessList filter to satisfy security rules
+                let q;
+                if (userProfile.role === 'admin' || userProfile.role === 'steward') {
+                    q = query(collection(db, "tickets"), where("status", "==", "Closed"));
+                } else {
+                    q = query(collection(db, "tickets"), where("accessList", "array-contains", currentUser.uid), where("status", "==", "Closed"));
+                }
                 const snap = await getDocs(q);
-                snap.forEach(d => reports.push({ id: d.id, ...d.data() }));
+                snap.forEach(d => {
+                    const data = d.data();
+                    // Client-side season filter (include legacy tickets without seasonId)
+                    if (data.seasonId === currentSeasonId || !data.seasonId) {
+                        reports.push({ id: d.id, ...data });
+                    }
+                });
             } catch (err) {
-                console.warn("Reports compound query failed, using fallback:", err);
-                // Fallback: get all closed tickets, filter by season client-side
+                console.warn("Reports query failed, trying simple fallback:", err);
+                // Fallback: fetch all accessible tickets, filter client-side
                 try {
-                    const q2 = query(collection(db, "tickets"), where("status", "==", "Closed"));
+                    let q2;
+                    if (userProfile.role === 'admin' || userProfile.role === 'steward') {
+                        q2 = query(collection(db, "tickets"));
+                    } else {
+                        q2 = query(collection(db, "tickets"), where("accessList", "array-contains", currentUser.uid));
+                    }
                     const snap = await getDocs(q2);
                     snap.forEach(d => {
                         const data = d.data();
-                        if (data.seasonId === currentSeasonId || !data.seasonId) {
+                        if (data.status === 'Closed' && (data.seasonId === currentSeasonId || !data.seasonId)) {
                             reports.push({ id: d.id, ...data });
                         }
                     });
