@@ -1479,14 +1479,44 @@
             }
 
             ticketUnsubscribe = onSnapshot(q, (snap) => {
+                renderTicketList(snap);
+            }, (error) => {
+                console.error("Ticket Listen Error:", error);
+                // If index is missing, fall back to unscoped query and filter client-side
+                if (error.code === 'failed-precondition' || error.message.includes('index')) {
+                    console.warn("Missing composite index. Falling back to client-side season filter. Check console for index link above.");
+                    fallbackTicketQuery();
+                }
+            });
+        }
+
+        async function fallbackTicketQuery() {
+            // Fallback: Query without seasonId compound, filter client-side
+            let q;
+            if (userProfile.role === 'admin' || userProfile.role === 'steward') {
+                q = query(collection(db, "tickets"), orderBy("updatedAt", "desc"));
+            } else {
+                q = query(collection(db, "tickets"), where("accessList", "array-contains", currentUser.uid), orderBy("updatedAt", "desc"));
+            }
+
+            ticketUnsubscribe = onSnapshot(q, (snap) => {
+                // Client-side filter by season (include legacy tickets without seasonId)
+                const filtered = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.seasonId === currentSeasonId || !data.seasonId) {
+                        filtered.push(d);
+                    }
+                });
+
                 const list = document.getElementById("ticketList");
                 list.innerHTML = "";
-                if (snap.empty) {
+                if (filtered.length === 0) {
                     list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">NO TICKETS IN THIS SEASON</div>';
                     return;
                 }
 
-                snap.forEach(d => {
+                filtered.forEach(d => {
                     const t = d.data();
                     const isOpen = t.status === 'Open';
                     const statusColor = isOpen ? 'var(--accent-yellow)' : 'var(--accent-green)';
@@ -1509,7 +1539,40 @@
                     }
                 });
             }, (error) => {
-                console.error("Ticket Listen Error", error);
+                console.error("Fallback ticket query also failed:", error);
+                document.getElementById("ticketList").innerHTML = '<div style="text-align:center; padding:20px; color:var(--accent-red); font-size:0.8rem;">ERROR LOADING TICKETS. Check console.</div>';
+            });
+        }
+
+        function renderTicketList(snap) {
+            const list = document.getElementById("ticketList");
+            list.innerHTML = "";
+            if (snap.empty) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">NO TICKETS IN THIS SEASON</div>';
+                return;
+            }
+
+            snap.forEach(d => {
+                const t = d.data();
+                const isOpen = t.status === 'Open';
+                const statusColor = isOpen ? 'var(--accent-yellow)' : 'var(--accent-green)';
+                const isSelected = currentTicketId === d.id;
+
+                list.innerHTML += `
+                    <div class="ticket-item${isSelected ? ' active-ticket' : ''}" onclick="window.loadTicketDetail('${d.id}')">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">#${d.id.substring(0, 6)}</span>
+                            <span style="font-size:0.7rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}; padding:2px 4px; border-radius:4px;">${t.status.toUpperCase()}</span>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">vs ${t.reportedName}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">${t.session}</div>
+                    </div>
+                `;
+
+                if (currentTicketId === d.id) {
+                    renderChat(t.messages);
+                    updateTicketClosedState(t);
+                }
             });
         }
 
@@ -1704,19 +1767,39 @@
 
         // ==================== REPORTS (Closed Tickets) ====================
         async function loadReports() {
-            const q = query(collection(db, "tickets"), where("seasonId", "==", currentSeasonId), where("status", "==", "Closed"));
-            const snap = await getDocs(q);
             const el = document.getElementById('reportsList');
             const countEl = document.getElementById('reportCount');
+            let reports = [];
 
-            if (snap.empty) {
+            try {
+                const q = query(collection(db, "tickets"), where("seasonId", "==", currentSeasonId), where("status", "==", "Closed"));
+                const snap = await getDocs(q);
+                snap.forEach(d => reports.push({ id: d.id, ...d.data() }));
+            } catch (err) {
+                console.warn("Reports compound query failed, using fallback:", err);
+                // Fallback: get all closed tickets, filter by season client-side
+                try {
+                    const q2 = query(collection(db, "tickets"), where("status", "==", "Closed"));
+                    const snap = await getDocs(q2);
+                    snap.forEach(d => {
+                        const data = d.data();
+                        if (data.seasonId === currentSeasonId || !data.seasonId) {
+                            reports.push({ id: d.id, ...data });
+                        }
+                    });
+                } catch (err2) {
+                    console.error("Reports fallback also failed:", err2);
+                    el.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:20px;">ERROR LOADING REPORTS</div>';
+                    return;
+                }
+            }
+
+            if (reports.length === 0) {
                 el.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">NO CLOSED REPORTS THIS SEASON</div>';
                 if (countEl) countEl.innerText = '0 REPORTS';
                 return;
             }
 
-            const reports = [];
-            snap.forEach(d => reports.push({ id: d.id, ...d.data() }));
             reports.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
             if (countEl) countEl.innerText = `${reports.length} REPORT${reports.length !== 1 ? 'S' : ''}`;
