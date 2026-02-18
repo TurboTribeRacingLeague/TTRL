@@ -1741,6 +1741,10 @@
                             title="Delete Current Season">
                             <i class="fas fa-trash"></i>
                         </button>
+                        <button class="icon-btn" onclick="window.addNewSeason()" title="Add New Season"
+                            style="color: var(--accent-green);">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
 
                     <div class="tier-filter-bar" id="globalTierFilter">
@@ -2813,6 +2817,24 @@
             });
         };
 
+        window.addNewSeason = () => {
+            const name = prompt('Enter new season name (e.g. season_2):');
+            if (!name || !name.trim()) return;
+            const seasonId = name.trim().toLowerCase().replace(/\s+/g, '_');
+            customConfirm(`Create new season: "${seasonId.toUpperCase()}"?`, async () => {
+                try {
+                    const docRef = doc(db, "seasons", seasonId);
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) { showToast('Season already exists'); return; }
+                    await setDoc(docRef, { trackConfig: [] });
+                    showToast(`SEASON ${seasonId.toUpperCase()} CREATED`);
+                    await refreshSeasonList();
+                    document.getElementById('seasonInput').value = seasonId;
+                    loadSeasonData(seasonId);
+                } catch (e) { console.error(e); showToast('Error creating season'); }
+            });
+        };
+
         async function loadTrackConfig() {
             const list = document.getElementById("trackConfigList"); const docRef = doc(db, "seasons", currentSeason);
             try { const snap = await getDoc(docRef); activeTracks = (snap.exists() && snap.data().trackConfig) ? snap.data().trackConfig : []; activeTracks.sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31')); } catch (e) { activeTracks = []; }
@@ -2839,15 +2861,16 @@
             safeSet('dashTeamLeader', (TEAMS.find(t => t.id === topTeam.id)?.name || topTeam.id).toUpperCase()); safeSet('dashTeamPts', `${topTeam.pts} PTS`);
 
             const now = new Date(); let nextRace = null; let racesDone = 0; const calList = document.getElementById('dashCalendarList');
-            if (calList) { calList.innerHTML = ""; activeTracks.forEach((t, i) => { let statusColor = "var(--text-secondary)", statusIcon = ""; if (t.date) { const d = new Date(t.date); if (d < now) { racesDone++; statusColor = "var(--accent-green)"; statusIcon = `<i class="fas fa-check"></i>`; } else if (!nextRace) { nextRace = t; statusColor = "var(--accent-cyan)"; statusIcon = `<i class="fas fa-flag"></i>`; } } calList.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-dim); color:var(--text-secondary);"><span style="font-weight:600; color:${statusColor}">${String(i + 1).padStart(2, '0')} ${t.name}</span><span style="font-size:0.85rem; font-family:var(--font-data);">${t.date || 'TBD'} ${statusIcon}</span></div>`; }); }
-            else { activeTracks.forEach((t) => { if (t.date && new Date(t.date) < now) racesDone++; else if (t.date && !nextRace) nextRace = t; }); }
+            const isRaceFinished = (dateStr) => { if (!dateStr) return false; const finishTime = new Date(`${dateStr}T22:30:00+05:30`); return now > finishTime; };
+            if (calList) { calList.innerHTML = ""; activeTracks.forEach((t, i) => { let statusColor = "var(--text-secondary)", statusIcon = ""; if (t.date) { if (isRaceFinished(t.date)) { racesDone++; statusColor = "var(--accent-green)"; statusIcon = `<i class="fas fa-check"></i>`; } else if (!nextRace) { nextRace = t; statusColor = "var(--accent-cyan)"; statusIcon = `<i class="fas fa-flag"></i>`; } } calList.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-dim); color:var(--text-secondary);"><span style="font-weight:600; color:${statusColor}">${String(i + 1).padStart(2, '0')} ${t.name}</span><span style="font-size:0.85rem; font-family:var(--font-data);">${t.date || 'TBD'} ${statusIcon}</span></div>`; }); }
+            else { activeTracks.forEach((t) => { if (t.date && isRaceFinished(t.date)) racesDone++; else if (t.date && !nextRace) nextRace = t; }); }
 
             const totalRaces = activeTracks.length || 1; const pct = Math.round((racesDone / totalRaces) * 100);
             safeSet('dashProgressPct', `${pct}%`); safeSet('dashRacesDone', `${racesDone} / ${totalRaces} RACES`);
             const bar = document.getElementById('dashProgressBar'); if (bar) bar.style.width = `${pct}%`;
             if (nextRace) { const parts = nextRace.id.split('_'); safeSet('dashNextRace', parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ') + ' GP'); } else { safeSet('dashNextRace', "SEASON END"); }
             let lastWinnerName = "--", lastWinnerGP = "NO RACES";
-            if (racesDone > 0) { const pastRaces = activeTracks.filter(t => t.date && new Date(t.date) < now); pastRaces.sort((a, b) => new Date(b.date) - new Date(a.date)); const lastRace = pastRaces[0]; if (lastRace) { lastWinnerGP = lastRace.name.toUpperCase(); let maxPts = -1, winner = null; filtered.forEach(d => { const r = d.results ? d.results[lastRace.id] : null; if (r) { const p = (typeof r === 'object') ? r.points : r; if (p > maxPts) { maxPts = p; winner = d.name; } } }); if (winner) lastWinnerName = winner; } }
+            if (racesDone > 0) { const pastRaces = activeTracks.filter(t => t.date && isRaceFinished(t.date)); pastRaces.sort((a, b) => new Date(b.date) - new Date(a.date)); const lastRace = pastRaces[0]; if (lastRace) { lastWinnerGP = lastRace.name.toUpperCase(); let maxPts = -1, winner = null; filtered.forEach(d => { const r = d.results ? d.results[lastRace.id] : null; if (r) { const p = (typeof r === 'object') ? r.points : r; if (p > maxPts) { maxPts = p; winner = d.name; } } }); if (winner) lastWinnerName = winner; } }
             safeSet('dashLastWinner', lastWinnerName.toUpperCase()); safeSet('dashLastGP', lastWinnerGP);
 
             let driverGap = 0; if (filtered.length >= 2) { const sortedDrivers = [...filtered].sort((a, b) => b.totalPoints - a.totalPoints); driverGap = sortedDrivers[0].totalPoints - sortedDrivers[1].totalPoints; } safeSet('dashDriverGap', driverGap);
@@ -3453,7 +3476,7 @@
                     });
 
                     if (relevantDrivers.length === 0) {
-                        dd.innerHTML = '<div class="tw-px-3 tw-py-2 tw-text-xs tw-text-gray-500 tw-italic">No drivers found</div>';
+                        dd.innerHTML = '<div class="tw-px-3 tw-py-2 tw-text-xs tw-italic" style="color: var(--text-muted);">No drivers found</div>';
                         return;
                     }
 
@@ -3463,17 +3486,18 @@
 
                     const createHeader = (title) => {
                         const h = document.createElement('div');
-                        h.className = 'tw-px-3 tw-py-1 tw-text-[10px] tw-font-bold tw-text-gray-500 tw-uppercase tw-tracking-wider tw-border-b dd-header';
+                        h.className = 'tw-px-3 tw-py-1 tw-text-[10px] tw-font-bold tw-uppercase tw-tracking-wider tw-border-b dd-header';
                         // Keep header slightly transparent to blend with dropdown bg
-                        h.style = "background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-dim);";
+                        h.style = "background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--border-dim); color: var(--text-secondary);";
                         h.textContent = title;
                         return h;
                     };
 
                     const createItem = (d) => {
                         const item = document.createElement('div');
-                        item.className = 'tw-px-3 tw-py-2 tw-text-xs tw-text-gray-200 hover:tw-bg-blue-600 tw-cursor-pointer tw-uppercase tw-transition-colors dd-item';
+                        item.className = 'tw-px-3 tw-py-2 tw-text-xs hover:tw-bg-blue-600 tw-cursor-pointer tw-uppercase tw-transition-colors dd-item';
                         item.textContent = d.name;
+                        item.style.color = 'var(--text-primary)';
                         item.dataset.val = d.name.toUpperCase();
                         item.onmousedown = (e) => {
                             e.preventDefault();
